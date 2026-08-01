@@ -118,7 +118,7 @@
 <body>
 
   <header>
-    <h1>👗 Редактор игры «Одень куклу» + Английские задания</h1>
+    <h1>👗 Редактор игры «Одень куклу» (С вопросами для разблокировки)</h1>
   </header>
 
   <main>
@@ -179,10 +179,10 @@
 
       <hr style="border:0; border-top:1px solid rgba(255,255,255,.1); margin:4px 0;">
 
-      <h2>🇬🇧 Задания на отработку английского языка</h2>
-      <div class="hint">Добавьте вопросы, слова или мини-викторину, которые ученик должен пройти в процессе игры. Формат: Вопрос / Задание | Правильный ответ</div>
+      <h2>🇬🇧 Английские вопросы для разблокировки одежды</h2>
+      <div class="hint">Ученик сможет надеть вещь только после правильного ответа на один из этих вопросов. Формат: Вопрос | Правильный ответ</div>
       <div>
-        <label>Список заданий (Vocabulary & Grammar Tasks)</label>
+        <label>Список вопросов (Vocabulary & Grammar Tasks)</label>
         <textarea id="engTasks" placeholder="Как переводится «платье»? | dress
 Напишите множественное число: shoe -> | shoes
 Вставьте артикль: __ cat (a/an) | a"></textarea>
@@ -220,13 +220,15 @@
           { name: $('#cat2Name').value, items: parseItems($('#cat2Items').value) },
           { name: $('#cat3Name').value, items: parseItems($('#cat3Items').value) }
         ],
+        // Передаем флаг блокировки и сами вопросы в конфиг для main.html
+        lockByQuestion: true,
         englishTasks: parseTasks($('#engTasks').value)
       };
       
       const encoded = encodeURIComponent(JSON.stringify(config));
       const iframe = `<iframe src="https://nikashum93.github.io/dress_up_game/main.html?data=${encoded}" width="900" height="650" style="border:0;" allow="allowfullscreen"></iframe>`;
       $('#iframeOut').value = iframe;
-      alert('Конфигурация с английскими заданиями успешно сгенерирована!');
+      alert('Конфигурация с блокировкой одежды по вопросам успешно сгенерирована!');
     };
 
     function parseItems(text) {
@@ -246,7 +248,7 @@
     }
 
     $('#testBtn').onclick = () => {
-      alert('Все поля, включая задания по английскому, заполнены корректно.');
+      alert('Все поля корректны. Режим с вопросами для разблокировки настроен.');
     };
 
     $('#copyBtn').onclick = () => {
