@@ -1,4 +1,69 @@
-function getCode() {
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Конструктор игры «Одень куклу» (Прозрачный) 🛠️</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; background: #121212; color: white; }
+        #panel { width: 450px; background: #1a1a1a; padding: 20px; border-right: 2px solid #ff79c6; overflow-y: auto; box-sizing: border-box; }
+        .card { background: #252525; padding: 10px; margin-bottom: 10px; border-left: 4px solid #ff79c6; border-radius: 6px; }
+        input, textarea { width: 90%; padding: 8px; margin: 5px 0; background: #111; border: 1px solid #444; color: #fff; border-radius: 4px; }
+        textarea { height: 60px; resize: vertical; }
+        .btn-copy { background: #ff79c6; color: #111; padding: 15px; width: 100%; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; border-radius: 6px; font-size: 15px; }
+        .btn-copy:hover { filter: brightness(1.1); }
+        h2, h3 { color: #ff79c6; }
+    </style>
+</head>
+<body>
+
+<div id="panel">
+    <h2>Настройка куклы 🛠️</h2>
+    Заголовок игры: <input type="text" id="game-title" value="Одень принцессу" oninput="draw()"><br>
+    URL куклы (база): <input type="text" id="doll-url" value="https://i.postimg.cc/3w737X2j/doll-base.png" oninput="draw()"><br>
+    Акцентный цвет: <input type="color" id="acc-col" value="#ff79c6" onchange="draw()"><br>
+
+    <h3>Категория 1 (Одежда)</h3>
+    Название: <input type="text" id="cat1-name" value="Одежда" oninput="draw()"><br>
+    Вещи (Название | URL картинки, каждое с новой строки):<br>
+    <textarea id="cat1-items" oninput="draw()">Платье | https://i.postimg.cc/Sx5Z5q41/dress.png
+Кофта | https://i.postimg.cc/1879Q2gW/shoes.png</textarea><br>
+
+    <h3>Категория 2 (Обувь)</h3>
+    Название: <input type="text" id="cat2-name" value="Обувь" oninput="draw()"><br>
+    Вещи:<br>
+    <textarea id="cat2-items" oninput="draw()">Туфли | https://i.postimg.cc/1879Q2gW/shoes.png</textarea><br>
+
+    <h3>🇬🇧 Английские вопросы для разблокировки</h3>
+    <textarea id="eng-tasks" oninput="draw()">Как переводится «платье»? | dress
+Как переводится «туфли»? | shoes</textarea><br>
+
+    <button class="btn-copy" onclick="copyCode()">КОПИРОВАТЬ ПРОЗРАЧНЫЙ КОД ДЛЯ GENIALLY</button>
+</div>
+
+<div id="view" style="flex-grow:1; display:flex; justify-content:center; align-items:center; background:#222; background-image: radial-gradient(#444 1px, transparent 1px); background-size: 20px 20px;">
+    <div id="preview-frame" style="width:750px; height:550px; display:flex; justify-content:center; align-items:center;"></div>
+</div>
+
+<script>
+    function parseItems(text) {
+        return text.split('\n').map(line => {
+            const p = line.split('|');
+            if (p.length < 2) return null;
+            return { name: p[0].trim(), url: p[1].trim() };
+        }).filter(Boolean);
+    }
+
+    function parseTasks(text) {
+        return text.split('\n').map(line => {
+            const p = line.split('|');
+            if (p.length < 2) return null;
+            return { q: p[0].trim(), ans: p[1].trim().toLowerCase() };
+        }).filter(Boolean);
+    }
+
+    let currentBlobUrl = "";
+
+    function getCode() {
         const title = document.getElementById('game-title').value;
         const dollUrl = document.getElementById('doll-url').value;
         const accCol = document.getElementById('acc-col').value;
@@ -14,7 +79,6 @@ function getCode() {
         const dataObj = { title, dollUrl, categories: [{ name: cat1Name, items: cat1Items }, { name: cat2Name, items: cat2Items }], tasks };
         const jsonStr = JSON.stringify(dataObj);
 
-        // Используем безопасный шаблон без ломающих кавычки символов
         const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
@@ -133,7 +197,25 @@ function getCode() {
 </body>
 </html>`;
 
-        // Кодируем через URL-сущности для надежной вставки без ломания кавычек
-        const encodedHtml = "data:text/html;charset=utf-8," + encodeURIComponent(htmlContent);
-        return `<iframe allowtransparency="true" style="background:transparent;" src="${encodedHtml}" width="750" height="550" frameborder="0"></iframe>`;
+        if (currentBlobUrl) {
+            URL.revokeObjectURL(currentBlobUrl);
+        }
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        currentBlobUrl = URL.createObjectURL(blob);
+
+        return `<iframe allowtransparency="true" style="background:transparent;" src="${currentBlobUrl}" width="750" height="550" frameborder="0"></iframe>`;
     }
+
+    function draw() {
+        document.getElementById('preview-frame').innerHTML = getCode();
+    }
+    
+    function copyCode() {
+        navigator.clipboard.writeText(getCode());
+        alert("Прозрачный код скопирован! Вставьте его в Genially через Insert -> Insert code.");
+    }
+
+    draw();
+</script>
+</body>
+</html>
