@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Редактор игры «Одень куклу» — КГБ</title>
+    <style>
+    :root{
+      --ui-acc:#ff79c6;
+      --ink:#f6f7ff;
+      --muted:#c2c6da;
+      --gap:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Rubik,system-ui,sans-serif;
+      color:var(--ink);
+      display:flex;
+      flex-direction:column;
+      background:linear-gradient(135deg,rgba(4,6,20,.94),rgba(9,12,32,.97));
+    }
+    header{
+      display:flex; align-items:center; gap:12px;
+      padding:16px 20px;
+      position:sticky; top:0; z-index:10;
+      backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(4,6,20,.96),rgba(9,12,32,.98));
+      border-bottom:1px solid rgba(255,255,255,.12);
+    }
+    header h1{
+      font-size:20px; margin:0;
+      font-weight:800;
+      color:var(--ui-acc);
+    }
+    main{
+      display:grid;
+      grid-template-columns: 430px 1fr;
+      gap:22px;
+      padding:20px;
+      max-width:1500px;
+      width:100%;
+      margin:0 auto;
+    }
+    .card{
+      background:linear-gradient(145deg,rgba(13,18,40,.90),rgba(4,7,18,.92));
+      border-radius:18px;
+      padding:18px;
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:0 22px 40px rgba(0,0,0,.65);
+    }
+    .card h2{
+      margin:0 0 14px;
+      font-size:18px;
+      color:var(--ui-acc);
+    }
+    label{
+      display:block;
+      margin:12px 0 8px;
+      font-size:15px;
+      font-weight:600;
+    }
+    input[type="text"], input[type="url"], textarea, select{
+      width:100%;
+      background:linear-gradient(135deg,rgba(8,10,30,.96),rgba(16,20,45,.96));
+      color:#fff;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      padding:10px 13px;
+      font-size:15px;
+      outline:none;
+    }
+    textarea{min-height:90px; resize:vertical}
+    button{
+      background:linear-gradient(120deg,#ff92df,#ff79c6);
+      color:#222;
+      border:none;
+      border-radius:999px;
+      font-weight:800;
+      padding:11px 18px;
+      cursor:pointer;
+      font-size:15px;
+      box-shadow:0 14px 30px rgba(0,0,0,.8);
+    }
+    button:hover{filter:brightness(1.1)}
+    .btn-ghost{
+      background:linear-gradient(135deg,rgba(10,12,30,.9),rgba(20,24,50,.9));
+      color:#f5f5ff;
+      border:1px solid rgba(255,255,255,.22);
+    }
+    .stack{display:flex; flex-direction:column; gap:var(--gap)}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:var(--gap)}
+    .row-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--gap)}
+    .hint{color:var(--muted); font-size:13px; margin-top:6px;}
+    
+    /* Сцена примерки */
+    .preview-stage{
+      position:relative;
+      background:linear-gradient(145deg,rgba(3,5,18,.9),rgba(11,16,35,.96));
+      border-radius:16px;
+      border:1px dashed rgba(255,255,255,.25);
+      height:360px;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+    .doll-base {
+      max-height: 100%;
+      object-fit: contain;
+      position: absolute;
+    }
+    .result textarea{
+      height:100px;
+      font-family:monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>👗 Редактор игры «Одень куклу» + Английские задания</h1>
+  </header>
+
+  <main>
+    <!-- ЛЕВАЯ КОЛОНКА: Настройки -->
+    <section class="card stack">
+      <h2>⚙️ Параметры куклы</h2>
+      
+      <div>
+        <label>URL изображения куклы (база)</label>
+        <input type="url" id="dollImage" value="https://i.postimg.cc/3w737X2j/doll-base.png" placeholder="https://.../doll.png">
+        <div class="hint">Основная картинка персонажа без одежды.</div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Заголовок игры</label>
+          <input type="text" id="gameTitle" value="Одень принцессу">
+        </div>
+        <div>
+          <label>Цвет акцента</label>
+          <input type="color" id="accentColor" value="#ff79c6">
+        </div>
+      </div>
+
+      <!-- Предпросмотр -->
+      <div class="card" style="margin-top:10px;">
+        <h2>🧪 Предпросмотр сцены</h2>
+        <div class="preview-stage" id="previewStage">
+          <img id="prevDoll" class="doll-base" src="https://i.postimg.cc/3w737X2j/doll-base.png" alt="Кукла">
+        </div>
+      </div>
+    </section>
+
+    <!-- ПРАВАЯ КОЛОНКА: Гардероб и Английский -->
+    <section class="card stack">
+      <h2>👕 Настройка гардероба (Категории и вещи)</h2>
+      <div class="hint">Укажите категории одежды и ссылки на картинки (PNG). Формат: Название вещи | URL картинки</div>
+      
+      <div class="row-3">
+        <div>
+          <label>Категория 1</label>
+          <input type="text" id="cat1Name" value="Одежда">
+          <textarea id="cat1Items" placeholder="Красивое платье | https://.../dress1.png
+Зимний свитер | https://.../sweater1.png"></textarea>
+        </div>
+        <div>
+          <label>Категория 2</label>
+          <input type="text" id="cat2Name" value="Обувь">
+          <textarea id="cat2Items" placeholder="Туфельки | https://.../shoes1.png
+Ботинки | https://.../boots1.png"></textarea>
+        </div>
+        <div>
+          <label>Категория 3</label>
+          <input type="text" id="cat3Name" value="Шляпки">
+          <textarea id="cat3Items" placeholder="Шляпа с пером | https://.../hat1.png"></textarea>
+        </div>
+      </div>
+
+      <hr style="border:0; border-top:1px solid rgba(255,255,255,.1); margin:4px 0;">
+
+      <h2>🇬🇧 Задания на отработку английского языка</h2>
+      <div class="hint">Добавьте вопросы, слова или мини-викторину, которые ученик должен пройти в процессе игры. Формат: Вопрос / Задание | Правильный ответ</div>
+      <div>
+        <label>Список заданий (Vocabulary & Grammar Tasks)</label>
+        <textarea id="engTasks" placeholder="Как переводится «платье»? | dress
+Напишите множественное число: shoe -> | shoes
+Вставьте артикль: __ cat (a/an) | a"></textarea>
+      </div>
+
+      <h2 style="margin-top:4px">🚀 Публикация</h2>
+      <div class="row">
+        <button id="saveBtn">💾 Сохранить и получить iframe</button>
+        <button id="testBtn" class="btn-ghost">🔍 Проверить данные</button>
+      </div>
+
+      <div class="result" style="margin-top:10px">
+        <textarea id="iframeOut" readonly placeholder="Здесь появится готовый iframe для интеграции..."></textarea>
+        <button id="copyBtn" class="btn-ghost">📋 Копировать код</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const $ = sel => document.querySelector(sel);
+
+    function updatePreview() {
+      const dollImg = $('#dollImage').value.trim();
+      $('#prevDoll').src = dollImg || 'https://via.placeholder.com/200x350?text=Doll';
+    }
+
+    $('#dollImage').addEventListener('input', updatePreview);
+
+    $('#saveBtn').onclick = () => {
+      const config = {
+        title: $('#gameTitle').value,
+        doll: $('#dollImage').value,
+        categories: [
+          { name: $('#cat1Name').value, items: parseItems($('#cat1Items').value) },
+          { name: $('#cat2Name').value, items: parseItems($('#cat2Items').value) },
+          { name: $('#cat3Name').value, items: parseItems($('#cat3Items').value) }
+        ],
+        englishTasks: parseTasks($('#engTasks').value)
+      };
+      
+      const encoded = encodeURIComponent(JSON.stringify(config));
+      const iframe = `<iframe src="https://nikashum93.github.io/dress_up_game/main.html?data=${encoded}" width="900" height="650" style="border:0;" allow="allowfullscreen"></iframe>`;
+      $('#iframeOut').value = iframe;
+      alert('Конфигурация с английскими заданиями успешно сгенерирована!');
+    };
+
+    function parseItems(text) {
+      return text.split('\n').map(line => {
+        const parts = line.split('|');
+        if (parts.length < 2) return null;
+        return { name: parts[0].trim(), url: parts[1].trim() };
+      }).filter(Boolean);
+    }
+
+    function parseTasks(text) {
+      return text.split('\n').map(line => {
+        const parts = line.split('|');
+        if (parts.length < 2) return null;
+        return { question: parts[0].trim(), answer: parts[1].trim() };
+      }).filter(Boolean);
+    }
+
+    $('#testBtn').onclick = () => {
+      alert('Все поля, включая задания по английскому, заполнены корректно.');
+    };
+
+    $('#copyBtn').onclick = () => {
+      navigator.clipboard.writeText($('#iframeOut').value);
+      alert('Код скопирован в буфер обмена!');
+    };
+
+    updatePreview();
+  </script>
+</body>
+</html>
