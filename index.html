@@ -1,67 +1,4 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Конструктор игры «Одень куклу» (Прозрачный) 🛠️</title>
-    <style>
-        body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; background: #121212; color: white; }
-        #panel { width: 450px; background: #1a1a1a; padding: 20px; border-right: 2px solid #ff79c6; overflow-y: auto; }
-        .card { background: #252525; padding: 10px; margin-bottom: 10px; border-left: 4px solid #ff79c6; border-radius: 6px; }
-        input, textarea { width: 90%; padding: 8px; margin: 5px 0; background: #111; border: 1px solid #444; color: #fff; border-radius: 4px; }
-        textarea { height: 60px; resize: vertical; }
-        .btn-copy { background: #ff79c6; color: #111; padding: 15px; width: 100%; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; border-radius: 6px; font-size: 15px; }
-        .btn-copy:hover { filter: brightness(1.1); }
-        h2, h3 { color: #ff79c6; }
-    </style>
-</head>
-<body>
-
-<div id="panel">
-    <h2>Настройка куклы 🛠️</h2>
-    Заголовок игры: <input type="text" id="game-title" value="Одень принцессу" oninput="draw()"><br>
-    URL куклы (база): <input type="text" id="doll-url" value="https://i.postimg.cc/3w737X2j/doll-base.png" oninput="draw()"><br>
-    Акцентный цвет: <input type="color" id="acc-col" value="#ff79c6" onchange="draw()"><br>
-
-    <h3>Категория 1 (Одежда)</h3>
-    Название: <input type="text" id="cat1-name" value="Одежда" oninput="draw()"><br>
-    Вещи (Название | URL картинки, каждое с новой строки):<br>
-    <textarea id="cat1-items" oninput="draw()">Платье | https://i.postimg.cc/Sx5Z5q41/dress.png
-Кофта | https://i.postimg.cc/1879Q2gW/shoes.png</textarea><br>
-
-    <h3>Категория 2 (Обувь)</h3>
-    Название: <input type="text" id="cat2-name" value="Обувь" oninput="draw()"><br>
-    Вещи:<br>
-    <textarea id="cat2-items" oninput="draw()">Туфли | https://i.postimg.cc/1879Q2gW/shoes.png</textarea><br>
-
-    <h3>🇬🇧 Английские вопросы для разблокировки</h3>
-    <textarea id="eng-tasks" oninput="draw()">Как переводится «платье»? | dress
-Как переводится «туфли»? | shoes</textarea><br>
-
-    <button class="btn-copy" onclick="copyCode()">КОПИРОВАТЬ ПРОЗРАЧНЫЙ КОД ДЛЯ GENIALLY</button>
-</div>
-
-<div id="view" style="flex-grow:1; display:flex; justify-content:center; align-items:center; background:#222; background-image: radial-gradient(#444 1px, transparent 1px); background-size: 20px 20px;">
-    <div id="preview-frame" style="width:750px; height:550px; display:flex; justify-content:center; align-items:center;"></div>
-</div>
-
-<script>
-    function parseItems(text) {
-        return text.split('\n').map(line => {
-            const p = line.split('|');
-            if (p.length < 2) return null;
-            return { name: p[0].trim(), url: p[1].trim() };
-        }).filter(Boolean);
-    }
-
-    function parseTasks(text) {
-        return text.split('\n').map(line => {
-            const p = line.split('|');
-            if (p.length < 2) return null;
-            return { q: p[0].trim(), ans: p[1].trim().toLowerCase() };
-        }).filter(Boolean);
-    }
-
-    function getCode() {
+function getCode() {
         const title = document.getElementById('game-title').value;
         const dollUrl = document.getElementById('doll-url').value;
         const accCol = document.getElementById('acc-col').value;
@@ -87,21 +24,21 @@
         return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="utf-8"><style>
             :root{--acc:${accCol};--ink:#f6f7ff;}
             body{margin:0;font-family:sans-serif;background:transparent;color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-            header{padding:8px 12px;background:rgba(10,15,35,0.7);backdrop-filter:blur(5px);border-bottom:1px solid rgba(255,255,255,0.1);font-weight:bold;color:var(--acc);font-size:15px;border-top-left-radius:12px;}
-            .container{display:grid;grid-template-columns:1fr 300px;flex:1;overflow:hidden;background:rgba(10,15,35,0.4);backdrop-filter:blur(8px);border-bottom-left-radius:12px;border-bottom-right-radius:12px;}
-            .stage{position:relative;display:flex;align-items:center;justify-content:center;}
+            header{padding:6px 12px;background:transparent;font-weight:bold;color:var(--acc);font-size:15px;text-shadow: 0 1px 2px rgba(0,0,0,0.8);}
+            .container{display:grid;grid-template-columns:1fr 300px;flex:1;overflow:hidden;background:transparent;}
+            .stage{position:relative;display:flex;align-items:center;justify-content:center;background:transparent;}
             .doll{max-height:85%;max-width:85%;object-fit:contain;position:absolute;pointer-events:none;}
-            .sidebar{background:rgba(13,18,40,0.85);border-left:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;padding:10px;overflow-y:auto;}
+            .sidebar{background:transparent;display:flex;flex-direction:column;padding:10px;overflow-y:auto;}
             .tabs{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;}
-            .tab{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;}
+            .tab{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;}
             .tab.active{background:var(--acc);color:#111;border-color:var(--acc);font-weight:bold;}
             .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-            .card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px;text-align:center;cursor:pointer;}
-            .card:hover{border-color:var(--acc);}
+            .card{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px;text-align:center;cursor:pointer;}
+            .card:hover{border-color:var(--acc);background:rgba(0,0,0,0.6);}
             .card img{width:100%;height:75px;object-fit:contain;}
-            .card div{font-size:11px;margin-top:4px;}
-            .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:100;}
-            .modal-box{background:#131828;border:1px solid var(--acc);padding:20px;border-radius:12px;width:300px;text-align:center;}
+            .card div{font-size:11px;margin-top:4px;text-shadow: 0 1px 2px rgba(0,0,0,0.8);}
+            .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:100;}
+            .modal-box{background:#131828;border:1px solid var(--acc);padding:20px;border-radius:12px;width:300px;text-align:center;box-shadow: 0 10px 25px rgba(0,0,0,0.5);}
             .modal-box input{width:90%;padding:8px;background:#090c1a;border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;margin:10px 0;text-align:center;}
             .modal-box button{background:var(--acc);color:#111;border:none;padding:8px 16px;font-weight:bold;border-radius:6px;cursor:pointer;}
         </style></head><body>
@@ -145,6 +82,7 @@
                 grid.innerHTML = "";
                 const cat = data.categories[activeCat];
                 if(!cat || !cat.items) return;
+                cat.items.items = cat.items; // safeguard
                 cat.items.forEach(item => {
                     const c = document.createElement("div");
                     c.className = "card";
@@ -186,17 +124,5 @@
                 document.getElementById("stage").appendChild(img);
             }
             init();
-        <\/script></body></html>' width="750" height="550" frameborder="0" allowtransparency="true"></iframe>`;
+        <\/script></body></html>' width="750" height="550" frameborder="0" allowtransparency="true" style="background:transparent;"></iframe>`;
     }
-
-    function draw() {
-        document.getElementById('preview-frame').innerHTML = getCode();
-    }
-    function copyCode() {
-        navigator.clipboard.writeText(getCode());
-        alert("Прозрачный код скопирован! Вставьте его в Genially через Insert -> Insert code.");
-    }
-    draw();
-</script>
-</body>
-</html>
