@@ -82,7 +82,6 @@ function getCode() {
                 grid.innerHTML = "";
                 const cat = data.categories[activeCat];
                 if(!cat || !cat.items) return;
-                cat.items.items = cat.items; // safeguard
                 cat.items.forEach(item => {
                     const c = document.createElement("div");
                     c.className = "card";
