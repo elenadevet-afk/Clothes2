@@ -94,7 +94,6 @@
     .row-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--gap)}
     .hint{color:var(--muted); font-size:13px; margin-top:6px;}
     
-    /* Сцена примерки */
     .preview-stage{
       position:relative;
       background:linear-gradient(145deg,rgba(3,5,18,.9),rgba(11,16,35,.96));
@@ -118,14 +117,12 @@
 <body>
 
   <header>
-    <h1>👗 Редактор игры «Одень куклу» (С блокировкой вопросами)</h1>
+    <h1>👗 Редактор игры «Одень куклу» (Генератор Iframe)</h1>
   </header>
 
   <main>
-    <!-- ЛЕВАЯ КОЛОНКА: Настройки -->
     <section class="card stack">
       <h2>⚙️ Параметры куклы</h2>
-      
       <div>
         <label>URL изображения куклы (база)</label>
         <input type="url" id="dollImage" value="https://i.postimg.cc/3w737X2j/doll-base.png" placeholder="https://.../doll.png">
@@ -143,7 +140,6 @@
         </div>
       </div>
 
-      <!-- Предпросмотр -->
       <div class="card" style="margin-top:10px;">
         <h2>🧪 Предпросмотр сцены</h2>
         <div class="preview-stage" id="previewStage">
@@ -152,49 +148,45 @@
       </div>
     </section>
 
-    <!-- ПРАВАЯ КОЛОНКА: Гардероб и Английский -->
     <section class="card stack">
       <h2>👕 Настройка гардероба (Категории и вещи)</h2>
-      <div class="hint">Укажите категории одежды и ссылки на картинки (PNG). Формат: Название вещи | URL картинки</div>
+      <div class="hint">Формат: Название вещи | URL картинки (каждая вещь с новой строки)</div>
       
       <div class="row-3">
         <div>
           <label>Категория 1</label>
           <input type="text" id="cat1Name" value="Одежда">
-          <textarea id="cat1Items" placeholder="Красивое платье | https://.../dress1.png
-Зимний свитер | https://.../sweater1.png"></textarea>
+          <textarea id="cat1Items" placeholder="Платье | https://.../dress1.png"></textarea>
         </div>
         <div>
           <label>Категория 2</label>
           <input type="text" id="cat2Name" value="Обувь">
-          <textarea id="cat2Items" placeholder="Туфельки | https://.../shoes1.png
-Ботинки | https://.../boots1.png"></textarea>
+          <textarea id="cat2Items" placeholder="Туфли | https://.../shoes1.png"></textarea>
         </div>
         <div>
           <label>Категория 3</label>
           <input type="text" id="cat3Name" value="Шляпки">
-          <textarea id="cat3Items" placeholder="Шляпа с пером | https://.../hat1.png"></textarea>
+          <textarea id="cat3Items" placeholder="Шляпа | https://.../hat1.png"></textarea>
         </div>
       </div>
 
       <hr style="border:0; border-top:1px solid rgba(255,255,255,.1); margin:4px 0;">
 
-      <h2>🇬🇧 Английские вопросы для разблокировки одежды</h2>
-      <div class="hint">Ученик сможет надеть вещь только после правильного ответа. Формат: Вопрос | Правильный ответ</div>
+      <h2>🇬🇧 Английские вопросы для разблокировки</h2>
+      <div class="hint">Формат: Вопрос | Правильный ответ</div>
       <div>
         <label>Список вопросов</label>
-        <textarea id="engTasks" placeholder="Как переводится «платье»? | dress
-Напишите множественное число: shoe -> | shoes"></textarea>
+        <textarea id="engTasks" placeholder="Как переводится «платье»? | dress"></textarea>
       </div>
 
-      <h2 style="margin-top:4px">🚀 Публикация</h2>
+      <h2 style="margin-top:4px">🚀 Получение кода</h2>
       <div class="row">
-        <button id="saveBtn">💾 Сохранить и получить iframe</button>
+        <button id="saveBtn">💾 Создать Iframe</button>
         <button id="testBtn" class="btn-ghost">🔍 Проверить данные</button>
       </div>
 
       <div class="result" style="margin-top:10px">
-        <textarea id="iframeOut" readonly placeholder="Здесь появится готовый iframe код для вставки в Genially..."></textarea>
+        <textarea id="iframeOut" readonly placeholder="Здесь появится готовый тег <iframe ...></iframe>"></textarea>
         <button id="copyBtn" class="btn-ghost">📋 Копировать код</button>
       </div>
     </section>
@@ -215,7 +207,7 @@
         title: $('#gameTitle').value,
         doll: $('#dollImage').value,
         categories: [
-          { name: $('#cat1Name',).value, items: parseItems($('#cat1Items').value) },
+          { name: $('#cat1Name').value, items: parseItems($('#cat1Items').value) },
           { name: $('#cat2Name').value, items: parseItems($('#cat2Items').value) },
           { name: $('#cat3Name').value, items: parseItems($('#cat3Items').value) }
         ],
@@ -225,11 +217,11 @@
       
       const encoded = encodeURIComponent(JSON.stringify(config));
       
-      // Генерируем классический чистый iframe для вставки на страницы (включая Genially)
-      const iframe = `<iframe src="https://nikashum93.github.io/dress_up_game/main.html?data=${encoded}" width="900" height="650" style="border:0;" allowfullscreen="true" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+      // Генерация стандартного iframe для вставки на любые платформы
+      const iframeCode = `<iframe src="https://nikashum93.github.io/dress_up_game/main.html?data=${encoded}" width="900" height="650" style="border:0;" allowfullscreen="true" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
       
-      $('#iframeOut').value = iframe;
-      alert('Iframe успешно сгенерирован!');
+      $('#iframeOut').value = iframeCode;
+      alert('Iframe успешно сгенерирован в поле ниже!');
     };
 
     function parseItems(text) {
@@ -254,7 +246,7 @@
 
     $('#copyBtn').onclick = () => {
       navigator.clipboard.writeText($('#iframeOut').value);
-      alert('Код скопирован в буфер обмена!');
+      alert('Iframe скопирован в буфер обмена!');
     };
 
     updatePreview();
