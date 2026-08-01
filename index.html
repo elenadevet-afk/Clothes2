@@ -217,7 +217,6 @@
       
       const encoded = encodeURIComponent(JSON.stringify(config));
       
-      // Генерация чистого iframe с отметкой версии
       const iframeCode = `<iframe src="https://nikashum93.github.io/dress_up_game/main.html?v=2&data=${encoded}" width="900" height="650" style="border:0;" allowfullscreen="true" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
       
       $('#iframeOut').value = iframeCode;
@@ -235,7 +234,7 @@
     function parseTasks(text) {
       return text.split('\n').map(line => {
         const parts = line.split('|');
-        if, (parts.length < 2) return null;
+        if (parts.length < 2) return null; // Исправлено: убрана лишняя запятая после if
         return { question: parts[0].trim(), answer: parts[1].trim() };
       }).filter(Boolean);
     }
