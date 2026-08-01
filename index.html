@@ -1,227 +1,284 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Редактор игры «Одень куклу» — КГБ</title>
-    <style>
-    :root{
-      --ui-acc:#ff79c6;
-      --ink:#f6f7ff;
-      --muted:#c2c6da;
-      --gap:16px;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Конструктор и игра «Одень куклу»</title>
+  <style>
+    :root {
+      --ui-acc: #ff79c6;
+      --ink: #f6f7ff;
+      --bg-dark: #090c20;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:Rubik,system-ui,sans-serif;
-      color:var(--ink);
-      display:flex;
-      flex-direction:column;
-      background:linear-gradient(135deg,rgba(4,6,20,.94),rgba(9,12,32,.97));
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Rubik, system-ui, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(135deg, rgba(4,6,20,.96), rgba(9,12,32,.99));
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    header{
-      display:flex; align-items:center; gap:12px;
-      padding:16px 20px;
-      position:sticky; top:0; z-index:10;
-      backdrop-filter:blur(18px);
-      background:linear-gradient(135deg,rgba(4,6,20,.96),rgba(9,12,32,.98));
-      border-bottom:1px solid rgba(255,255,255,.12);
+    header {
+      padding: 16px 20px;
+      background: rgba(4,6,20,0.9);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    header h1{
-      font-size:20px; margin:0;
-      font-weight:800;
-      color:var(--ui-acc);
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      color: var(--ui-acc);
     }
-    main{
-      display:grid;
-      grid-template-columns: 430px 1fr;
-      gap:22px;
-      padding:20px;
-      max-width:1500px;
-      width:100%;
-      margin:0 auto;
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
     }
-    .card{
-      background:linear-gradient(145deg,rgba(13,18,40,.90),rgba(4,7,18,.92));
-      border-radius:18px;
-      padding:18px;
-      border:1px solid rgba(255,255,255,.16);
-      box-shadow:0 22px 40px rgba(0,0,0,.65);
+    .screen.active {
+      display: flex;
     }
-    .card h2{
-      margin:0 0 14px;
-      font-size:18px;
-      color:var(--ui-acc);
+    /* Стили редактора */
+    .editor-container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: rgba(13,18,40,0.9);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      width: 100%;
     }
-    label{
-      display:block;
-      margin:12px 0 8px;
-      font-size:15px;
-      font-weight:600;
+    .editor-container label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: 600;
+      font-size: 14px;
     }
-    input[type="text"], input[type="url"], textarea, select{
-      width:100%;
-      background:linear-gradient(135deg,rgba(8,10,30,.96),rgba(16,20,45,.96));
-      color:#fff;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.18);
-      padding:10px 13px;
-      font-size:15px;
-      outline:none;
+    .editor-container input, .editor-container textarea {
+      width: 100%;
+      padding: 10px;
+      background: #090c1a;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 10px;
     }
-    textarea{min-height:90px; resize:vertical}
-    button{
-      background:linear-gradient(120deg,#ff92df,#ff79c6);
-      color:#222;
-      border:none;
-      border-radius:999px;
-      font-weight:800;
-      padding:11px 18px;
-      cursor:pointer;
-      font-size:15px;
-      box-shadow:0 14px 30px rgba(0,0,0,.8);
+    .editor-container textarea { height: 80px; resize: vertical; }
+    .btn-main {
+      background: var(--ui-acc);
+      color: #111;
+      border: none;
+      padding: 12px 24px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      margin-top: 15px;
     }
-    button:hover{filter:brightness(1.1)}
-    .btn-ghost{
-      background:linear-gradient(135deg,rgba(10,12,30,.9),rgba(20,24,50,.9));
-      color:#f5f5ff;
-      border:1px solid rgba(255,255,255,.22);
+    .btn-main:hover { filter: brightness(1.1); }
+
+    /* Стили самой игры */
+    .game-container {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      flex: 1;
+      height: calc(100vh - 57px);
     }
-    .stack{display:flex; flex-direction:column; gap:var(--gap)}
-    .row{display:grid; grid-template-columns:1fr 1fr; gap:var(--gap)}
-    .row-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--gap)}
-    .hint{color:var(--muted); font-size:13px; margin-top:6px;}
-    
-    .preview-stage{
-      position:relative;
-      background:linear-gradient(145deg,rgba(3,5,18,.9),rgba(11,16,35,.96));
-      border-radius:16px;
-      border:1px dashed rgba(255,255,255,.25);
-      height:360px;
-      display:flex; align-items:center; justify-content:center;
-      overflow:hidden;
+    .stage {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(20,25,50,0.8) 0%, rgba(5,7,20,0.95) 100%);
+      overflow: hidden;
     }
-    .doll-base {
-      max-height: 100%;
+    .doll-layer {
+      max-height: 85%;
+      max-width: 85%;
       object-fit: contain;
       position: absolute;
+      pointer-events: none;
     }
-    .result textarea{
-      height:100px;
-      font-family:monospace;
+    .clothes-sidebar {
+      background: rgba(13,18,40,0.95);
+      border-left: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .tab-btn.active {
+      background: var(--ui-acc);
+      color: #111;
+      border-color: var(--ui-acc);
+    }
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .item-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .item-card:hover {
+      border-color: var(--ui-acc);
+      transform: translateY(-2px);
+    }
+    .item-card img {
+      width: 100%;
+      height: 90px;
+      object-fit: contain;
+    }
+    .item-name {
+      font-size: 12px;
+      margin-top: 6px;
+    }
+    /* Модальное окно с вопросом */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal {
+      background: #131828;
+      border: 1px solid var(--ui-acc);
+      padding: 25px;
+      border-radius: 16px;
+      width: 350px;
+      text-align: center;
+    }
+    .modal h3 { margin-top: 0; color: var(--ui-acc); }
+    .modal input {
+      width: 100%;
+      padding: 10px;
+      background: #090c1a;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 15px;
+      outline: none;
+      text-align: center;
+    }
+    .modal button {
+      background: var(--ui-acc);
+      color: #111;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .back-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>👗 Редактор игры «Одень куклу» (Версия с iframe v2)</h1>
+    <h1 id="headerTitle">Конструктор игры</h1>
+    <button class="back-btn" id="backToEditorBtn" style="display:none;" onclick="showEditor()">⚙️ Назад в редактор</button>
   </header>
 
-  <main>
-    <section class="card stack">
-      <h2>⚙️ Параметры куклы</h2>
-      <div>
-        <label>URL изображения куклы (база)</label>
-        <input type="url" id="dollImage" value="https://i.postimg.cc/3w737X2j/doll-base.png" placeholder="https://.../doll.png">
-        <div class="hint">Основная картинка персонажа без одежды.</div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label>Заголовок игры</label>
-          <input type="text" id="gameTitle" value="Одень принцессу">
-        </div>
-        <div>
-          <label>Цвет акцента</label>
-          <input type="color" id="accentColor" value="#ff79c6">
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:10px;">
-        <h2>🧪 Предпросмотр сцены</h2>
-        <div class="preview-stage" id="previewStage">
-          <img id="prevDoll" class="doll-base" src="https://i.postimg.cc/3w737X2j/doll-base.png" alt="Кукла">
-        </div>
-      </div>
-    </section>
-
-    <section class="card stack">
-      <h2>👕 Настройка гардероба (Категории и вещи)</h2>
-      <div class="hint">Формат: Название вещи | URL картинки (каждая вещь с новой строки)</div>
+  <!-- ЭКРАН 1: РЕДАКТОР -->
+  <div id="editorScreen" class="screen active">
+    <div class="editor-container">
+      <h2>Настройка вашей игры</h2>
       
-      <div class="row-3">
-        <div>
-          <label>Категория 1</label>
-          <input type="text" id="cat1Name" value="Одежда">
-          <textarea id="cat1Items" placeholder="Платье | https://.../dress1.png"></textarea>
-        </div>
-        <div>
-          <label>Категория 2</label>
-          <input type="text" id="cat2Name" value="Обувь">
-          <textarea id="cat2Items" placeholder="Туфли | https://.../shoes1.png"></textarea>
-        </div>
-        <div>
-          <label>Категория 3</label>
-          <input type="text" id="cat3Name" value="Шляпки">
-          <textarea id="cat3Items" placeholder="Шляпа | https://.../hat1.png"></textarea>
-        </div>
-      </div>
+      <label>Заголовок игры</label>
+      <input type="text" id="inTitle" value="Одень куклу">
 
-      <hr style="border:0; border-top:1px solid rgba(255,255,255,.1); margin:4px 0;">
+      <label>Ссылка на картинку куклы (база)</label>
+      <input type="text" id="inDoll" value="https://i.postimg.cc/3w737X2j/doll-base.png">
 
-      <h2>🇬🇧 Английские вопросы для разблокировки</h2>
-      <div class="hint">Формат: Вопрос | Правильный ответ</div>
-      <div>
-        <label>Список вопросов</label>
-        <textarea id="engTasks" placeholder="Как переводится «платье»? | dress"></textarea>
-      </div>
+      <h3>Категория 1 (например: Одежда)</h3>
+      <label>Название категории</label>
+      <input type="text" id="cat1Name" value="Одежда">
+      <label>Вещи (каждая с новой строки: Название | Ссылка на картинку)</label>
+      <textarea id="cat1Items">Платье | https://i.postimg.cc/Sx5Z5q41/dress.png</textarea>
 
-      <h2 style="margin-top:4px">🚀 Получение кода</h2>
-      <div class="row">
-        <button id="saveBtn">💾 Создать Iframe</button>
-        <button id="testBtn" class="btn-ghost">🔍 Проверить данные</button>
-      </div>
+      <h3>Категория 2 (например: Обувь)</h3>
+      <label>Название категории</label>
+      <input type="text" id="cat2Name" value="Обувь">
+      <label>Вещи</label>
+      <textarea id="cat2Items">Туфли | https://i.postimg.cc/1879Q2gW/shoes.png</textarea>
 
-      <div class="result" style="margin-top:10px">
-        <textarea id="iframeOut" readonly placeholder="Здесь появится готовый тег <iframe ...></iframe>"></textarea>
-        <button id="copyBtn" class="btn-ghost">📋 Копировать код</button>
+      <h3>🇬🇧 Английские вопросы (для разблокировки вещей)</h3>
+      <label>Вопросы (формат: Вопрос | Ответ, каждый с новой строки)</label>
+      <textarea id="inTasks">Как переводится «платье»? | dress
+Как переводится «туфли»? | shoes</textarea>
+
+      <button class="btn-main" onclick="launchGame()">🎮 Запустить игру</button>
+    </div>
+  </div>
+
+  <!-- ЭКРАН 2: САМА ИГРА -->
+  <div id="gameScreen" class="screen">
+    <div class="game-container">
+      <div class="stage" id="stage">
+        <img id="baseDoll" class="doll-layer" src="" alt="Кукла">
       </div>
-    </section>
-  </main>
+      <div class="clothes-sidebar">
+        <div class="tabs" id="categoryTabs"></div>
+        <div class="items-grid" id="itemsGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно для вопросов -->
+  <div class="modal-overlay" id="taskModal">
+    <div class="modal">
+      <h3>🇬🇧 Английский вопрос</h3>
+      <p id="taskQuestionText">Вопрос...</p>
+      <input type="text" id="taskAnswerInput" placeholder="Ваш ответ...">
+      <br>
+      <button onclick="checkAnswer()">Проверить</button>
+    </div>
+  </div>
 
   <script>
-    const $ = sel => document.querySelector(sel);
-
-    function updatePreview() {
-      const dollImg = $('#dollImage').value.trim();
-      $('#prevDoll').src = dollImg || 'https://via.placeholder.com/200x350?text=Doll';
-    }
-
-    $('#dollImage').addEventListener('input', updatePreview);
-
-    $('#saveBtn').onclick = () => {
-      const config = {
-        title: $('#gameTitle').value,
-        doll: $('#dollImage').value,
-        categories: [
-          { name: $('#cat1Name').value, items: parseItems($('#cat1Items').value) },
-          { name: $('#cat2Name').value, items: parseItems($('#cat2Items').value) },
-          { name: $('#cat3Name').value, items: parseItems($('#cat3Items').value) }
-        ],
-        lockByQuestion: true,
-        englishTasks: parseTasks($('#engTasks').value)
-      };
-      
-      const encoded = encodeURIComponent(JSON.stringify(config));
-      
-      const iframeCode = `<iframe src="https://nikashum93.github.io/dress_up_game/main.html?v=2&data=${encoded}" width="900" height="650" style="border:0;" allowfullscreen="true" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
-      
-      $('#iframeOut').value = iframeCode;
-      alert('Iframe успешно сгенерирован!');
-    };
+    let gameData = {};
+    let activeCategoryIndex = 0;
+    let currentItemToUnlock = null;
+    let currentCorrectAnswer = "";
 
     function parseItems(text) {
       return text.split('\n').map(line => {
@@ -234,21 +291,113 @@
     function parseTasks(text) {
       return text.split('\n').map(line => {
         const parts = line.split('|');
-        if (parts.length < 2) return null; // Исправлено: убрана лишняя запятая после if
+        if (parts.length < 2) return null;
         return { question: parts[0].trim(), answer: parts[1].trim() };
       }).filter(Boolean);
     }
 
-    $('#testBtn').onclick = () => {
-      alert('Все поля заполнены корректно.');
-    };
+    function launchGame() {
+      gameData = {
+        title: document.getElementById('inTitle').value,
+        doll: document.getElementById('inDoll').value,
+        categories: [
+          { name: document.getElementById('cat1Name').value, items: parseItems(document.getElementById('cat1Items').value) },
+          { name: document.getElementById('cat2Name').value, items: parseItems(document.getElementById('cat2Items').value) }
+        ],
+        englishTasks: parseTasks(document.getElementById('inTasks').value)
+      };
 
-    $('#copyBtn').onclick = () => {
-      navigator.clipboard.writeText($('#iframeOut').value);
-      alert('Iframe скопирован в буфер обмена!');
-    };
+      document.getElementById('headerTitle').innerText = gameData.title;
+      document.getElementById('baseDoll').src = gameData.doll;
+      
+      document.getElementById('editorScreen').classList.remove('active');
+      document.getElementById('gameScreen').classList.add('active');
+      document.getElementById('backToEditorBtn').style.display = 'block';
 
-    updatePreview();
+      initGameEngine();
+    }
+
+    function showEditor() {
+      document.getElementById('gameScreen').classList.remove('active');
+      document.getElementById('editorScreen').classList.add('active');
+      document.getElementById('backToEditorBtn').style.display = 'none';
+      document.getElementById('headerTitle').innerText = "Конструктор игры";
+      document.getElementById('stage').innerHTML = '<img id="baseDoll" class="doll-layer" src="" alt="Кукла">';
+    }
+
+    function initGameEngine() {
+      const tabsContainer = document.getElementById('categoryTabs');
+      tabsContainer.innerHTML = '';
+      
+      gameData.categories.forEach((cat, index) => {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+        btn.innerText = cat.name;
+        btn.onclick = () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeCategoryIndex = index;
+          renderItems();
+        };
+        tabsContainer.appendChild(btn);
+      });
+      renderItems();
+    }
+
+    function renderItems() {
+      const itemsGrid = document.getElementById('itemsGrid');
+      itemsGrid.innerHTML = '';
+      const cat = gameData.categories[activeCategoryIndex];
+      if (!cat || !cat.items) return;
+
+      cat.items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `
+          <img src="${item.url}" alt="${item.name}">
+          <div class="item-name">${item.name}</div>
+        `;
+        card.onclick = () => tryEquipItem(item);
+        itemsGrid.appendChild(card);
+      });
+    }
+
+    function tryEquipItem(item) {
+      if (gameData.englishTasks && gameData.englishTasks.length > 0) {
+        currentItemToUnlock = item;
+        const randomIndex = Math.floor(Math.random() * gameData.englishTasks.length);
+        const task = gameData.englishTasks[randomIndex];
+        
+        document.getElementById('taskQuestionText').innerText = task.question;
+        document.getElementById('taskAnswerInput').value = '';
+        document.getElementById('taskModal').style.display = 'flex';
+        currentCorrectAnswer = task.answer.toLowerCase().trim();
+      } else {
+        equipItem(item);
+      }
+    }
+
+    function checkAnswer() {
+      const userAns = document.getElementById('taskAnswerInput').value.toLowerCase().trim();
+      if (userAns === currentCorrectAnswer) {
+        document.getElementById('taskModal').style.display = 'none';
+        if (currentItemToUnlock) equipItem(currentItemToUnlock);
+      } else {
+        alert('Неверно! Попробуйте еще раз.');
+      }
+    }
+
+    function equipItem(item) {
+      const stage = document.getElementById('stage');
+      let existing = document.getElementById(`equipped-${activeCategoryIndex}`);
+      if (existing) existing.remove();
+
+      const img = document.createElement('img');
+      img.id = `equipped-${activeCategoryIndex}`;
+      img.className = 'doll-layer';
+      img.src = item.url;
+      stage.appendChild(img);
+    }
   </script>
 </body>
 </html>
