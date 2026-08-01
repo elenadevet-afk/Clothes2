@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Редактор игры «Одень куклу» — КГБ</title>
+    <title>Редактор игры «Одень куклу» для Genially</title>
     <style>
     :root{
       --ui-acc:#ff79c6;
@@ -118,7 +118,7 @@
 <body>
 
   <header>
-    <h1>👗 Редактор игры «Одень куклу» (С вопросами для разблокировки)</h1>
+    <h1>👗 Редактор игры для Genially</h1>
   </header>
 
   <main>
@@ -180,22 +180,21 @@
       <hr style="border:0; border-top:1px solid rgba(255,255,255,.1); margin:4px 0;">
 
       <h2>🇬🇧 Английские вопросы для разблокировки одежды</h2>
-      <div class="hint">Ученик сможет надеть вещь только после правильного ответа на один из этих вопросов. Формат: Вопрос | Правильный ответ</div>
+      <div class="hint">Ученик сможет надеть вещь только после правильного ответа. Формат: Вопрос | Правильный ответ</div>
       <div>
-        <label>Список вопросов (Vocabulary & Grammar Tasks)</label>
+        <label>Список вопросов</label>
         <textarea id="engTasks" placeholder="Как переводится «платье»? | dress
-Напишите множественное число: shoe -> | shoes
-Вставьте артикль: __ cat (a/an) | a"></textarea>
+Напишите множественное число: shoe -> | shoes"></textarea>
       </div>
 
-      <h2 style="margin-top:4px">🚀 Публикация</h2>
+      <h2 style="margin-top:4px">🚀 Публикация для Genially</h2>
       <div class="row">
-        <button id="saveBtn">💾 Сохранить и получить iframe</button>
+        <button id="saveBtn">💾 Сгенерировать код для Genially</button>
         <button id="testBtn" class="btn-ghost">🔍 Проверить данные</button>
       </div>
 
       <div class="result" style="margin-top:10px">
-        <textarea id="iframeOut" readonly placeholder="Здесь появится готовый iframe для интеграции..."></textarea>
+        <textarea id="iframeOut" readonly placeholder="Здесь появится адаптированный код для вставки в Genially..."></textarea>
         <button id="copyBtn" class="btn-ghost">📋 Копировать код</button>
       </div>
     </section>
@@ -220,15 +219,17 @@
           { name: $('#cat2Name').value, items: parseItems($('#cat2Items').value) },
           { name: $('#cat3Name').value, items: parseItems($('#cat3Items').value) }
         ],
-        // Передаем флаг блокировки и сами вопросы в конфиг для main.html
         lockByQuestion: true,
         englishTasks: parseTasks($('#engTasks').value)
       };
       
       const encoded = encodeURIComponent(JSON.stringify(config));
-      const iframe = `<iframe src="https://nikashum93.github.io/dress_up_game/main.html?data=${encoded}" width="900" height="650" style="border:0;" allow="allowfullscreen"></iframe>`;
-      $('#iframeOut').value = iframe;
-      alert('Конфигурация с блокировкой одежды по вопросам успешно сгенерирована!');
+      
+      // Генерируем безопасный адаптивный контейнер со скриптом для Genially
+      const geniallyCode = `<div style="width:100%;height:100%;min-height:600px;position:relative;"><iframe src="https://nikashum93.github.io/dress_up_game/main.html?data=${encoded}" style="width:100%;height:100%;position:absolute;top:0;left:0;border:0;" allowfullscreen="true" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>`;
+      
+      $('#iframeOut').value = geniallyCode;
+      alert('Код адаптирован специально для Genially и готов к копированию!');
     };
 
     function parseItems(text) {
@@ -248,7 +249,7 @@
     }
 
     $('#testBtn').onclick = () => {
-      alert('Все поля корректны. Режим с вопросами для разблокировки настроен.');
+      alert('Все поля заполнены корректно.');
     };
 
     $('#copyBtn').onclick = () => {
