@@ -14,8 +14,8 @@ function getCode() {
         const dataObj = { title, dollUrl, categories: [{ name: cat1Name, items: cat1Items }, { name: cat2Name, items: cat2Items }], tasks };
         const jsonStr = JSON.stringify(dataObj);
 
-        // Формируем чистый HTML код для вставки в iframe без ломающих кавычки символов
-        const innerHtml = `<!DOCTYPE html>
+        // Используем безопасный шаблон без ломающих кавычки символов
+        const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -64,6 +64,7 @@ function getCode() {
 
     function init() {
         const tabs = document.getElementById("tabs");
+        if (!data.categories) return;
         data.categories.forEach((cat, idx) => {
             const btn = document.createElement("button");
             btn.className = "tab " + (idx === 0 ? "active" : "");
@@ -132,7 +133,7 @@ function getCode() {
 </body>
 </html>`;
 
-        // Безопасно оборачиваем в iframe с экранированием кавычек
-        const escapedHtml = innerHtml.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-        return `<iframe allowtransparency="true" style="background:transparent;" srcdoc="${escapedHtml}" width="750" height="550" frameborder="0"></iframe>`;
+        // Кодируем через URL-сущности для надежной вставки без ломания кавычек
+        const encodedHtml = "data:text/html;charset=utf-8," + encodeURIComponent(htmlContent);
+        return `<iframe allowtransparency="true" style="background:transparent;" src="${encodedHtml}" width="750" height="550" frameborder="0"></iframe>`;
     }
