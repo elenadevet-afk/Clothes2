@@ -21,107 +21,83 @@ function getCode() {
 
         const jsonStr = JSON.stringify(dataObj);
 
-        return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-            :root{--acc:${accCol};--ink:#f6f7ff;}
-            body{margin:0;font-family:sans-serif;background:transparent;color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-            header{padding:6px 12px;background:transparent;font-weight:bold;color:var(--acc);font-size:15px;text-shadow: 0 1px 2px rgba(0,0,0,0.8);}
-            .container{display:grid;grid-template-columns:1fr 300px;flex:1;overflow:hidden;background:transparent;}
-            .stage{position:relative;display:flex;align-items:center;justify-content:center;background:transparent;}
-            .doll{max-height:85%;max-width:85%;object-fit:contain;position:absolute;pointer-events:none;}
-            .sidebar{background:transparent;display:flex;flex-direction:column;padding:10px;overflow-y:auto;}
-            .tabs{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;}
-            .tab{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;}
-            .tab.active{background:var(--acc);color:#111;border-color:var(--acc);font-weight:bold;}
-            .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-            .card{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px;text-align:center;cursor:pointer;}
-            .card:hover{border-color:var(--acc);background:rgba(0,0,0,0.6);}
-            .card img{width:100%;height:75px;object-fit:contain;}
-            .card div{font-size:11px;margin-top:4px;text-shadow: 0 1px 2px rgba(0,0,0,0.8);}
-            .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:100;}
-            .modal-box{background:#131828;border:1px solid var(--acc);padding:20px;border-radius:12px;width:300px;text-align:center;box-shadow: 0 10px 25px rgba(0,0,0,0.5);}
-            .modal-box input{width:90%;padding:8px;background:#090c1a;border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;margin:10px 0;text-align:center;}
-            .modal-box button{background:var(--acc);color:#111;border:none;padding:8px 16px;font-weight:bold;border-radius:6px;cursor:pointer;}
-        </style></head><body>
-        <header>${title}</header>
-        <div class="container">
-            <div class="stage" id="stage"><img class="doll" src="${dollUrl}"></div>
-            <div class="sidebar">
-                <div class="tabs" id="tabs"></div>
-                <div class="grid" id="grid"></div>
-            </div>
-        </div>
-        <div class="modal" id="modal"><div class="modal-box">
-            <h3 style="margin-top:0;color:var(--acc);">🇬🇧 Вопрос</h3>
-            <p id="q-text"></p>
-            <input type="text" id="ans-input" placeholder="Ответ...">
-            <br><button onclick="checkAns()">Проверить</button>
-        </div></div>
-        <script>
-            const data = ${jsonStr};
-            let activeCat = 0, targetItem = null, currentTask = null;
-
-            function init() {
-                const tabs = document.getElementById("tabs");
-                data.categories.forEach((cat, idx) => {
-                    const btn = document.createElement("button");
-                    btn.className = "tab " + (idx === 0 ? "active" : "");
-                    btn.innerText = cat.name;
-                    btn.onclick = () => {
-                        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-                        btn.classList.add("active");
-                        activeCat = idx;
-                        renderGrid();
-                    };
-                    tabs.appendChild(btn);
-                });
-                renderGrid();
-            }
-
-            function renderGrid() {
-                const grid = document.getElementById("grid");
-                grid.innerHTML = "";
-                const cat = data.categories[activeCat];
-                if(!cat || !cat.items) return;
-                cat.items.forEach(item => {
-                    const c = document.createElement("div");
-                    c.className = "card";
-                    c.innerHTML = '<img src="'+item.url+'"><div>'+item.name+'</div>';
-                    c.onclick = () => tryEquip(item);
-                    grid.appendChild(c);
-                });
-            }
-
-            function tryEquip(item) {
-                if(data.tasks && data.tasks.length > 0) {
-                    targetItem = item;
-                    currentTask = data.tasks[Math.floor(Math.random() * data.tasks.length)];
-                    document.getElementById("q-text").innerText = currentTask.q;
-                    document.getElementById("ans-input").value = "";
-                    document.getElementById("modal").style.display = "flex";
-                } else {
-                    equip(item);
-                }
-            }
-
-            function checkAns() {
-                const val = document.getElementById("ans-input").value.trim().toLowerCase();
-                if(val === currentTask.ans) {
-                    document.getElementById("modal").style.display = "none";
-                    equip(targetItem);
-                } else {
-                    alert("Неверно, попробуйте еще раз!");
-                }
-            }
-
-            function equip(item) {
-                let ex = document.getElementById("eq-" + activeCat);
-                if(ex) ex.remove();
-                const img = document.createElement("img");
-                img.id = "eq-" + activeCat;
-                img.className = "doll";
-                img.src = item.url;
-                document.getElementById("stage").appendChild(img);
-            }
-            init();
-        <\/script></body></html>' width="750" height="550" frameborder="0" allowtransparency="true" style="background:transparent;"></iframe>`;
+        return '<iframe srcdoc=\'<!DOCTYPE html><html><head><meta charset="utf-8"><style>' +
+            ':root{--acc:' + accCol + ';--ink:#f6f7ff;}' +
+            'body{margin:0;font-family:sans-serif;background:transparent;color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden;}' +
+            'header{padding:6px 12px;background:transparent;font-weight:bold;color:var(--acc);font-size:15px;text-shadow: 0 1px 2px rgba(0,0,0,0.8);}' +
+            '.container{display:grid;grid-template-columns:1fr 300px;flex:1;overflow:hidden;background:transparent;}' +
+            '.stage{position:relative;display:flex;align-items:center;justify-content:center;background:transparent;}' +
+            '.doll{max-height:85%;max-width:85%;object-fit:contain;position:absolute;pointer-events:none;}' +
+            '.sidebar{background:transparent;display:flex;flex-direction:column;padding:10px;overflow-y:auto;}' +
+            '.tabs{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;}' +
+            '.tab{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;}' +
+            '.tab.active{background:var(--acc);color:#111;border-color:var(--acc);font-weight:bold;}' +
+            '.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}' +
+            '.card{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px;text-align:center;cursor:pointer;}' +
+            '.card:hover{border-color:var(--acc);background:rgba(0,0,0,0.6);}' +
+            '.card img{width:100%;height:75px;object-fit:contain;}' +
+            '.card div{font-size:11px;margin-top:4px;text-shadow: 0 1px 2px rgba(0,0,0,0.8);}' +
+            '.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:100;}' +
+            '.modal-box{background:#131828;border:1px solid var(--acc);padding:20px;border-radius:12px;width:300px;text-align:center;box-shadow: 0 10px 25px rgba(0,0,0,0.5);}' +
+            '.modal-box input{width:90%;padding:8px;background:#090c1a;border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;margin:10px 0;text-align:center;}' +
+            '.modal-box button{background:var(--acc);color:#111;border:none;padding:8px 16px;font-weight:bold;border-radius:6px;cursor:pointer;}' +
+            '</style></head><body>' +
+            '<header>' + title + '</header>' +
+            '<div class="container">' +
+            '<div class="stage" id="stage"><img class="doll" src="' + dollUrl + '"></div>' +
+            '<div class="sidebar"><div class="tabs" id="tabs"></div><div class="grid" id="grid"></div></div>' +
+            '</div>' +
+            '<div class="modal" id="modal"><div class="modal-box">' +
+            '<h3 style="margin-top:0;color:var(--acc);">🇬🇧 Вопрос</h3>' +
+            '<p id="q-text"></p><input type="text" id="ans-input" placeholder="Ответ..."><br>' +
+            '<button onclick="checkAns()">Проверить</button>' +
+            '</div></div>' +
+            '<script>' +
+            'const data = ' + jsonStr + ';' +
+            'let activeCat = 0, targetItem = null, currentTask = null;' +
+            'function init() {' +
+            'const tabs = document.getElementById("tabs");' +
+            'data.categories.forEach((cat, idx) => {' +
+            'const btn = document.createElement("button");' +
+            'btn.className = "tab " + (idx === 0 ? "active" : "");' +
+            'btn.innerText = cat.name;' +
+            'btn.onclick = () => {' +
+            'document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));' +
+            'btn.classList.add("active"); activeCat = idx; renderGrid();' +
+            '};' +
+            'tabs.appendChild(btn);' +
+            '});' +
+            'renderGrid();' +
+            '}' +
+            'function renderGrid() {' +
+            'const grid = document.getElementById("grid"); grid.innerHTML = "";' +
+            'const cat = data.categories[activeCat]; if(!cat || !cat.items) return;' +
+            'cat.items.forEach(item => {' +
+            'const c = document.createElement("div"); c.className = "card";' +
+            'c.innerHTML = \'<img src="\' + item.url + \'"><div>\' + item.name + \'</div>\';' +
+            'c.onclick = () => tryEquip(item); grid.appendChild(c);' +
+            '});' +
+            '}' +
+            'function tryEquip(item) {' +
+            'if(data.tasks && data.tasks.length > 0) {' +
+            'targetItem = item; currentTask = data.tasks[Math.floor(Math.random() * data.tasks.length)];' +
+            'document.getElementById("q-text").innerText = currentTask.q;' +
+            'document.getElementById("ans-input").value = "";' +
+            'document.getElementById("modal").style.display = "flex";' +
+            '} else { equip(item); }' +
+            '}' +
+            'function checkAns() {' +
+            'const val = document.getElementById("ans-input").value.trim().toLowerCase();' +
+            'if(val === currentTask.ans) {' +
+            'document.getElementById("modal").style.display = "none"; equip(targetItem);' +
+            '} else { alert("Неверно, попробуйте еще раз!"); }' +
+            '}' +
+            'function equip(item) {' +
+            'let ex = document.getElementById("eq-" + activeCat); if(ex) ex.remove();' +
+            'const img = document.createElement("img"); img.id = "eq-" + activeCat;' +
+            'img.className = "doll"; img.src = item.url;' +
+            'document.getElementById("stage").appendChild(img);' +
+            '}' +
+            'init();' +
+            '<\/script></body></html>\' width="750" height="550" frameborder="0" allowtransparency="true" style="background:transparent;"></iframe>';
     }
