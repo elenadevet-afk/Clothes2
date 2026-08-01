@@ -1,403 +1,202 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Конструктор и игра «Одень куклу»</title>
-  <style>
-    :root {
-      --ui-acc: #ff79c6;
-      --ink: #f6f7ff;
-      --bg-dark: #090c20;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Rubik, system-ui, sans-serif;
-      color: var(--ink);
-      background: linear-gradient(135deg, rgba(4,6,20,.96), rgba(9,12,32,.99));
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    header {
-      padding: 16px 20px;
-      background: rgba(4,6,20,0.9);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 18px;
-      color: var(--ui-acc);
-    }
-    .screen {
-      display: none;
-      flex: 1;
-      flex-direction: column;
-    }
-    .screen.active {
-      display: flex;
-    }
-    /* Стили редактора */
-    .editor-container {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 20px;
-      background: rgba(13,18,40,0.9);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 16px;
-      width: 100%;
-    }
-    .editor-container label {
-      display: block;
-      margin: 10px 0 5px;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .editor-container input, .editor-container textarea {
-      width: 100%;
-      padding: 10px;
-      background: #090c1a;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-    .editor-container textarea { height: 80px; resize: vertical; }
-    .btn-main {
-      background: var(--ui-acc);
-      color: #111;
-      border: none;
-      padding: 12px 24px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      width: 100%;
-      margin-top: 15px;
-    }
-    .btn-main:hover { filter: brightness(1.1); }
-
-    /* Стили самой игры */
-    .game-container {
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      flex: 1;
-      height: calc(100vh - 57px);
-    }
-    .stage {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle, rgba(20,25,50,0.8) 0%, rgba(5,7,20,0.95) 100%);
-      overflow: hidden;
-    }
-    .doll-layer {
-      max-height: 85%;
-      max-width: 85%;
-      object-fit: contain;
-      position: absolute;
-      pointer-events: none;
-    }
-    .clothes-sidebar {
-      background: rgba(13,18,40,0.95);
-      border-left: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      flex-direction: column;
-      padding: 15px;
-      overflow-y: auto;
-    }
-    .tabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .tab-btn.active {
-      background: var(--ui-acc);
-      color: #111;
-      border-color: var(--ui-acc);
-    }
-    .items-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    .item-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      padding: 8px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .item-card:hover {
-      border-color: var(--ui-acc);
-      transform: translateY(-2px);
-    }
-    .item-card img {
-      width: 100%;
-      height: 90px;
-      object-fit: contain;
-    }
-    .item-name {
-      font-size: 12px;
-      margin-top: 6px;
-    }
-    /* Модальное окно с вопросом */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-    }
-    .modal {
-      background: #131828;
-      border: 1px solid var(--ui-acc);
-      padding: 25px;
-      border-radius: 16px;
-      width: 350px;
-      text-align: center;
-    }
-    .modal h3 { margin-top: 0; color: var(--ui-acc); }
-    .modal input {
-      width: 100%;
-      padding: 10px;
-      background: #090c1a;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-      border-radius: 8px;
-      margin: 15px 0;
-      font-size: 15px;
-      outline: none;
-      text-align: center;
-    }
-    .modal button {
-      background: var(--ui-acc);
-      color: #111;
-      border: none;
-      padding: 10px 20px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .back-btn {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Конструктор игры «Одень куклу» 🛠️</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; background: #121212; color: white; }
+        #panel { width: 450px; background: #1a1a1a; padding: 20px; border-right: 2px solid #ff79c6; overflow-y: auto; }
+        .card { background: #252525; padding: 10px; margin-bottom: 10px; border-left: 4px solid #ff79c6; border-radius: 6px; }
+        input, textarea { width: 90%; padding: 8px; margin: 5px 0; background: #111; border: 1px solid #444; color: #fff; border-radius: 4px; }
+        textarea { height: 60px; resize: vertical; }
+        .btn-copy { background: #ff79c6; color: #111; padding: 15px; width: 100%; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; border-radius: 6px; font-size: 15px; }
+        .btn-copy:hover { filter: brightness(1.1); }
+        h2, h3 { color: #ff79c6; }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1 id="headerTitle">Конструктор игры</h1>
-    <button class="back-btn" id="backToEditorBtn" style="display:none;" onclick="showEditor()">⚙️ Назад в редактор</button>
-  </header>
+<div id="panel">
+    <h2>Настройка куклы 🛠️</h2>
+    Заголовок игры: <input type="text" id="game-title" value="Одень принцессу" oninput="draw()"><br>
+    URL куклы (база): <input type="text" id="doll-url" value="https://i.postimg.cc/3w737X2j/doll-base.png" oninput="draw()"><br>
+    Акцентный цвет: <input type="color" id="acc-col" value="#ff79c6" onchange="draw()"><br>
 
-  <!-- ЭКРАН 1: РЕДАКТОР -->
-  <div id="editorScreen" class="screen active">
-    <div class="editor-container">
-      <h2>Настройка вашей игры</h2>
-      
-      <label>Заголовок игры</label>
-      <input type="text" id="inTitle" value="Одень куклу">
+    <h3>Категория 1 (Одежда)</h3>
+    Название: <input type="text" id="cat1-name" value="Одежда" oninput="draw()"><br>
+    Вещи (Название | URL картинки, каждое с новой строки):<br>
+    <textarea id="cat1-items" oninput="draw()">Платье | https://i.postimg.cc/Sx5Z5q41/dress.png
+Кофта | https://i.postimg.cc/1879Q2gW/shoes.png</textarea><br>
 
-      <label>Ссылка на картинку куклы (база)</label>
-      <input type="text" id="inDoll" value="https://i.postimg.cc/3w737X2j/doll-base.png">
+    <h3>Категория 2 (Обувь)</h3>
+    Название: <input type="text" id="cat2-name" value="Обувь" oninput="draw()"><br>
+    Вещи:<br>
+    <textarea id="cat2-items" oninput="draw()">Туфли | https://i.postimg.cc/1879Q2gW/shoes.png</textarea><br>
 
-      <h3>Категория 1 (например: Одежда)</h3>
-      <label>Название категории</label>
-      <input type="text" id="cat1Name" value="Одежда">
-      <label>Вещи (каждая с новой строки: Название | Ссылка на картинку)</label>
-      <textarea id="cat1Items">Платье | https://i.postimg.cc/Sx5Z5q41/dress.png</textarea>
+    <h3>🇬🇧 Английские вопросы для разблокировки</h3>
+    <textarea id="eng-tasks" oninput="draw()">Как переводится «платье»? | dress
+Как переводится «туфли»? | shoes</textarea><br>
 
-      <h3>Категория 2 (например: Обувь)</h3>
-      <label>Название категории</label>
-      <input type="text" id="cat2Name" value="Обувь">
-      <label>Вещи</label>
-      <textarea id="cat2Items">Туфли | https://i.postimg.cc/1879Q2gW/shoes.png</textarea>
+    <button class="btn-copy" onclick="copyCode()">КОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
+</div>
 
-      <h3>🇬🇧 Английские вопросы (для разблокировки вещей)</h3>
-      <label>Вопросы (формат: Вопрос | Ответ, каждый с новой строки)</label>
-      <textarea id="inTasks">Как переводится «платье»? | dress
-Как переводится «туфли»? | shoes</textarea>
+<div id="view" style="flex-grow:1; display:flex; justify-content:center; align-items:center; background:#090c20;">
+    <div id="preview-frame" style="width:750px; height:550px; display:flex; justify-content:center; align-items:center;"></div>
+</div>
 
-      <button class="btn-main" onclick="launchGame()">🎮 Запустить игру</button>
-    </div>
-  </div>
-
-  <!-- ЭКРАН 2: САМА ИГРА -->
-  <div id="gameScreen" class="screen">
-    <div class="game-container">
-      <div class="stage" id="stage">
-        <img id="baseDoll" class="doll-layer" src="" alt="Кукла">
-      </div>
-      <div class="clothes-sidebar">
-        <div class="tabs" id="categoryTabs"></div>
-        <div class="items-grid" id="itemsGrid"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Модальное окно для вопросов -->
-  <div class="modal-overlay" id="taskModal">
-    <div class="modal">
-      <h3>🇬🇧 Английский вопрос</h3>
-      <p id="taskQuestionText">Вопрос...</p>
-      <input type="text" id="taskAnswerInput" placeholder="Ваш ответ...">
-      <br>
-      <button onclick="checkAnswer()">Проверить</button>
-    </div>
-  </div>
-
-  <script>
-    let gameData = {};
-    let activeCategoryIndex = 0;
-    let currentItemToUnlock = null;
-    let currentCorrectAnswer = "";
-
+<script>
     function parseItems(text) {
-      return text.split('\n').map(line => {
-        const parts = line.split('|');
-        if (parts.length < 2) return null;
-        return { name: parts[0].trim(), url: parts[1].trim() };
-      }).filter(Boolean);
+        return text.split('\n').map(line => {
+            const p = line.split('|');
+            if (p.length < 2) return null;
+            return { name: p[0].trim(), url: p[1].trim() };
+        }).filter(Boolean);
     }
 
     function parseTasks(text) {
-      return text.split('\n').map(line => {
-        const parts = line.split('|');
-        if (parts.length < 2) return null;
-        return { question: parts[0].trim(), answer: parts[1].trim() };
-      }).filter(Boolean);
+        return text.split('\n').map(line => {
+            const p = line.split('|');
+            if (p.length < 2) return null;
+            return { q: p[0].trim(), ans: p[1].trim().toLowerCase() };
+        }).filter(Boolean);
     }
 
-    function launchGame() {
-      gameData = {
-        title: document.getElementById('inTitle').value,
-        doll: document.getElementById('inDoll').value,
-        categories: [
-          { name: document.getElementById('cat1Name').value, items: parseItems(document.getElementById('cat1Items').value) },
-          { name: document.getElementById('cat2Name').value, items: parseItems(document.getElementById('cat2Items').value) }
-        ],
-        englishTasks: parseTasks(document.getElementById('inTasks').value)
-      };
-
-      document.getElementById('headerTitle').innerText = gameData.title;
-      document.getElementById('baseDoll').src = gameData.doll;
-      
-      document.getElementById('editorScreen').classList.remove('active');
-      document.getElementById('gameScreen').classList.add('active');
-      document.getElementById('backToEditorBtn').style.display = 'block';
-
-      initGameEngine();
-    }
-
-    function showEditor() {
-      document.getElementById('gameScreen').classList.remove('active');
-      document.getElementById('editorScreen').classList.add('active');
-      document.getElementById('backToEditorBtn').style.display = 'none';
-      document.getElementById('headerTitle').innerText = "Конструктор игры";
-      document.getElementById('stage').innerHTML = '<img id="baseDoll" class="doll-layer" src="" alt="Кукла">';
-    }
-
-    function initGameEngine() {
-      const tabsContainer = document.getElementById('categoryTabs');
-      tabsContainer.innerHTML = '';
-      
-      gameData.categories.forEach((cat, index) => {
-        const btn = document.createElement('button');
-        btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
-        btn.innerText = cat.name;
-        btn.onclick = () => {
-          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          activeCategoryIndex = index;
-          renderItems();
-        };
-        tabsContainer.appendChild(btn);
-      });
-      renderItems();
-    }
-
-    function renderItems() {
-      const itemsGrid = document.getElementById('itemsGrid');
-      itemsGrid.innerHTML = '';
-      const cat = gameData.categories[activeCategoryIndex];
-      if (!cat || !cat.items) return;
-
-      cat.items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        card.innerHTML = `
-          <img src="${item.url}" alt="${item.name}">
-          <div class="item-name">${item.name}</div>
-        `;
-        card.onclick = () => tryEquipItem(item);
-        itemsGrid.appendChild(card);
-      });
-    }
-
-    function tryEquipItem(item) {
-      if (gameData.englishTasks && gameData.englishTasks.length > 0) {
-        currentItemToUnlock = item;
-        const randomIndex = Math.floor(Math.random() * gameData.englishTasks.length);
-        const task = gameData.englishTasks[randomIndex];
+    function getCode() {
+        const title = document.getElementById('game-title').value;
+        const dollUrl = document.getElementById('doll-url').value;
+        const accCol = document.getElementById('acc-col').value;
         
-        document.getElementById('taskQuestionText').innerText = task.question;
-        document.getElementById('taskAnswerInput').value = '';
-        document.getElementById('taskModal').style.display = 'flex';
-        currentCorrectAnswer = task.answer.toLowerCase().trim();
-      } else {
-        equipItem(item);
-      }
+        const cat1Name = document.getElementById('cat1-name').value;
+        const cat1Items = parseItems(document.getElementById('cat1-items').value);
+        
+        const cat2Name = document.getElementById('cat2-name').value;
+        const cat2Items = parseItems(document.getElementById('cat2-items').value);
+        
+        const tasks = parseTasks(document.getElementById('eng-tasks').value);
+
+        const dataObj = {
+            title, dollUrl, categories: [
+                { name: cat1Name, items: cat1Items },
+                { name: cat2Name, items: cat2Items }
+            ],
+            tasks
+        };
+
+        const jsonStr = JSON.stringify(dataObj);
+
+        return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+            :root{--acc:${accCol};--ink:#f6f7ff;}
+            body{margin:0;font-family:sans-serif;background:linear-gradient(135deg,#040614,#090c20);color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+            header{padding:10px 15px;background:rgba(4,6,20,0.9);border-bottom:1px solid rgba(255,255,255,0.1);font-weight:bold;color:var(--acc);font-size:16px;}
+            .container{display:grid;grid-template-columns:1fr 320px;flex:1;overflow:hidden;}
+            .stage{position:relative;display:flex;align-items:center;justify-content:center;}
+            .doll{max-height:85%;max-width:85%;object-fit:contain;position:absolute;pointer-events:none;}
+            .sidebar{background:rgba(13,18,40,0.95);border-left:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;padding:10px;overflow-y:auto;}
+            .tabs{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;}
+            .tab{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;}
+            .tab.active{background:var(--acc);color:#111;border-color:var(--acc);font-weight:bold;}
+            .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+            .card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px;text-align:center;cursor:pointer;}
+            .card:hover{border-color:var(--acc);}
+            .card img{width:100%;height:75px;object-fit:contain;}
+            .card div{font-size:11px;margin-top:4px;}
+            .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:100;}
+            .modal-box{background:#131828;border:1px solid var(--acc);padding:20px;border-radius:12px;width:300px;text-align:center;}
+            .modal-box input{width:90%;padding:8px;background:#090c1a;border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;margin:10px 0;text-align:center;}
+            .modal-box button{background:var(--acc);color:#111;border:none;padding:8px 16px;font-weight:bold;border-radius:6px;cursor:pointer;}
+        </style></head><body>
+        <header>${title}</header>
+        <div class="container">
+            <div class="stage" id="stage"><img class="doll" src="${dollUrl}"></div>
+            <div class="sidebar">
+                <div class="tabs" id="tabs"></div>
+                <div class="grid" id="grid"></div>
+            </div>
+        </div>
+        <div class="modal" id="modal"><div class="modal-box">
+            <h3 style="margin-top:0;color:var(--acc);">🇬🇧 Вопрос</h3>
+            <p id="q-text"></p>
+            <input type="text" id="ans-input" placeholder="Ответ...">
+            <br><button onclick="checkAns()">Проверить</button>
+        </div></div>
+        <script>
+            const data = ${jsonStr};
+            let activeCat = 0, targetItem = null, currentTask = null;
+
+            function init() {
+                const tabs = document.getElementById("tabs");
+                data.categories.forEach((cat, idx) => {
+                    const btn = document.createElement("button");
+                    btn.className = "tab " + (idx === 0 ? "active" : "");
+                    btn.innerText = cat.name;
+                    btn.onclick = () => {
+                        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+                        btn.classList.add("active");
+                        activeCat = idx;
+                        renderGrid();
+                    };
+                    tabs.appendChild(btn);
+                });
+                renderGrid();
+            }
+
+            function renderGrid() {
+                const grid = document.getElementById("grid");
+                grid.innerHTML = "";
+                const cat = data.categories[activeCat];
+                if(!cat || !cat.items) return;
+                cat.items.forEach(item => {
+                    const c = document.createElement("div");
+                    c.className = "card";
+                    c.innerHTML = '<img src="'+item.url+'"><div>'+item.name+'</div>';
+                    c.onclick = () => tryEquip(item);
+                    grid.appendChild(c);
+                });
+            }
+
+            function tryEquip(item) {
+                if(data.tasks && data.tasks.length > 0) {
+                    targetItem = item;
+                    currentTask = data.tasks[Math.floor(Math.random() * data.tasks.length)];
+                    document.getElementById("q-text").innerText = currentTask.q;
+                    document.getElementById("ans-input").value = "";
+                    document.getElementById("modal").style.display = "flex";
+                } else {
+                    equip(item);
+                }
+            }
+
+            function checkAns() {
+                const val = document.getElementById("ans-input").value.trim().toLowerCase();
+                if(val === currentTask.ans) {
+                    document.getElementById("modal").style.display = "none";
+                    equip(targetItem);
+                } else {
+                    alert("Неверно, попробуйте еще раз!");
+                }
+            }
+
+            function equip(item) {
+                let ex = document.getElementById("eq-" + activeCat);
+                if(ex) ex.remove();
+                const img = document.createElement("img");
+                img.id = "eq-" + activeCat;
+                img.className = "doll";
+                img.src = item.url;
+                document.getElementById("stage").appendChild(img);
+            }
+            init();
+        <\/script></body></html>' width="750" height="550" frameborder="0" allowtransparency="true"></iframe>`;
     }
 
-    function checkAnswer() {
-      const userAns = document.getElementById('taskAnswerInput').value.toLowerCase().trim();
-      if (userAns === currentCorrectAnswer) {
-        document.getElementById('taskModal').style.display = 'none';
-        if (currentItemToUnlock) equipItem(currentItemToUnlock);
-      } else {
-        alert('Неверно! Попробуйте еще раз.');
-      }
+    function draw() {
+        document.getElementById('preview-frame').innerHTML = getCode();
     }
-
-    function equipItem(item) {
-      const stage = document.getElementById('stage');
-      let existing = document.getElementById(`equipped-${activeCategoryIndex}`);
-      if (existing) existing.remove();
-
-      const img = document.createElement('img');
-      img.id = `equipped-${activeCategoryIndex}`;
-      img.className = 'doll-layer';
-      img.src = item.url;
-      stage.appendChild(img);
+    function copyCode() {
+        navigator.clipboard.writeText(getCode());
+        alert("Код скопирован в буфер обмена! Вставьте его в Genially через Insert -> Insert code.");
     }
-  </script>
+    draw();
+</script>
 </body>
 </html>
