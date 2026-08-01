@@ -117,7 +117,7 @@
 <body>
 
   <header>
-    <h1>👗 Редактор игры «Одень куклу» (Генератор Iframe)</h1>
+    <h1>👗 Редактор игры «Одень куклу» (Версия с iframe v2)</h1>
   </header>
 
   <main>
@@ -217,11 +217,11 @@
       
       const encoded = encodeURIComponent(JSON.stringify(config));
       
-      // Генерация стандартного iframe для вставки на любые платформы
-      const iframeCode = `<iframe src="https://nikashum93.github.io/dress_up_game/main.html?data=${encoded}" width="900" height="650" style="border:0;" allowfullscreen="true" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+      // Генерация чистого iframe с отметкой версии
+      const iframeCode = `<iframe src="https://nikashum93.github.io/dress_up_game/main.html?v=2&data=${encoded}" width="900" height="650" style="border:0;" allowfullscreen="true" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
       
       $('#iframeOut').value = iframeCode;
-      alert('Iframe успешно сгенерирован в поле ниже!');
+      alert('Iframe успешно сгенерирован!');
     };
 
     function parseItems(text) {
@@ -235,7 +235,7 @@
     function parseTasks(text) {
       return text.split('\n').map(line => {
         const parts = line.split('|');
-        if (parts.length < 2) return null;
+        if, (parts.length < 2) return null;
         return { question: parts[0].trim(), answer: parts[1].trim() };
       }).filter(Boolean);
     }
