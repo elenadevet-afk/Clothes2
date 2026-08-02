@@ -1,219 +1,235 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Конструктор игры «Одень куклу» 🛠️</title>
-<style>
-body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; background: #121212; color: white; }
-#panel { width: 450px; background: #1a1a1a; padding: 20px; border-right: 2px solid #ff79c6; overflow-y: auto; box-sizing: border-box; }
-input, textarea { width: 90%; padding: 8px; margin: 5px 0; background: #111; border: 1px solid #444; color: #fff; border-radius: 4px; }
-textarea { height: 60px; resize: vertical; }
-.btn-copy { background: #ff79c6; color: #111; padding: 15px; width: 100%; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; border-radius: 6px; font-size: 15px; }
-.btn-copy:hover { filter: brightness(1.1); }
-h2, h3 { color: #ff79c6; }
-#view { flex-grow: 1; display: flex; justify-content: center; align-items: center; background: #222; }
-.range-box { display: flex; align-items: center; gap: 10px; width: 93%; }
-.range-box input { flex: 1; }
-</style>
+    <meta charset="UTF-8">
+    <title>Конструктор игры «Одень куклу» 🛠️</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; background: #121212; color: white; }
+        #panel { width: 450px; background: #1a1a1a; padding: 20px; border-right: 2px solid #ff79c6; overflow-y: auto; box-sizing: border-box; }
+        input, textarea { width: 90%; padding: 8px; margin: 5px 0; background: #111; border: 1px solid #444; color: #fff; border-radius: 4px; }
+        textarea { height: 60px; resize: vertical; }
+        .btn-copy { background: #ff79c6; color: #111; padding: 15px; width: 100%; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; border-radius: 6px; font-size: 15px; }
+        .btn-copy:hover { filter: brightness(1.1); }
+        h2, h3 { color: #ff79c6; }
+        #view { flex-grow: 1; display: flex; justify-content: center; align-items: center; background: #222; }
+        .range-box { display: flex; align-items: center; gap: 10px; width: 93%; }
+        .range-box input { flex: 1; }
+    </style>
 </head>
 <body>
 
 <div id="panel">
-<h2>Настройка игры 🛠️</h2>
-Заголовок: <input type="text" id="game-title" value="Одень принцессу" oninput="updatePreview()"><br>
-URL куклы: <input type="text" id="doll-url" value="https://i.postimg.cc/3w737X2j/doll-base.png" oninput="updatePreview()"><br>
+    <h2>Настройка игры 🛠️</h2>
+    Заголовок: <input type="text" id="game-title" value="Одень принцессу" oninput="updatePreview()"><br>
+    URL куклы: <input type="text" id="doll-url" value="https://i.postimg.cc/3w737X2j/doll-base.png" oninput="updatePreview()"><br>
+    
+    Размер куклы (%): 
+    <div class="range-box">
+        <input type="range" id="doll-scale" min="40" max="150" value="85" oninput="updatePreview()">
+        <span id="doll-scale-val">85%</span>
+    </div><br>
 
-Размер куклы (%): 
-<div class="range-box">
-    <input type="range" id="doll-scale" min="40" max="150" value="85" oninput="updatePreview()">
-    <span id="doll-scale-val">85%</span>
-</div><br>
-Размер одежды (%): 
-<div class="range-box">
-    <input type="range" id="item-scale" min="40" max="150" value="85" oninput="updatePreview()">
-    <span id="item-scale-val">85%</span>
-</div><br>
-<h3>Одежда (Название | URL)</h3>
-<textarea id="cat1-items" oninput="updatePreview()">Платье | https://i.postimg.cc/Sx5Z5q41/dress.png
+    Размер одежды (%): 
+    <div class="range-box">
+        <input type="range" id="item-scale" min="40" max="150" value="85" oninput="updatePreview()">
+        <span id="item-scale-val">85%</span>
+    </div><br>
+
+    <h3>Одежда (Название | URL)</h3>
+    <textarea id="cat1-items" oninput="updatePreview()">Платье | https://i.postimg.cc/Sx5Z5q41/dress.png
 Кофта | https://i.postimg.cc/1879Q2gW/shoes.png</textarea><br>
 
-<h3>Обувь (Название | URL)</h3>
-<textarea id="cat2-items" oninput="updatePreview()">Туфли | https://i.postimg.cc/1879Q2gW/shoes.png</textarea><br>
-<h3>Вопросы (Вопрос | Ответ)</h3>
-<textarea id="eng-tasks" oninput="updatePreview()">Как переводится «платье»? | dress
+    <h3>Обувь (Название | URL)</h3>
+    <textarea id="cat2-items" oninput="updatePreview()">Туфли | https://i.postimg.cc/1879Q2gW/shoes.png</textarea><br>
+
+    <h3>Вопросы (Вопрос | Ответ)</h3>
+    <textarea id="eng-tasks" oninput="updatePreview()">Как переводится «платье»? | dress
 Как переводится «туфли»? | shoes</textarea><br>
 
-<button class="btn-copy" onclick="copyCode()">СКОПИРОВАТЬ IFRAME ДЛЯ GENIALLY</button>
+    <button class="btn-copy" onclick="copyCode()">СКОПИРОВАТЬ IFRAME ДЛЯ GENIALLY</button>
 </div>
 
 <div id="view">
-<iframe id="preview-frame" style="width: 750px; height: 550px; border: none; border-radius: 12px; background: transparent;"></iframe>
+    <iframe id="preview-frame" style="width: 750px; height: 550px; border: none; border-radius: 12px; background: transparent;"></iframe>
 </div>
 
 <script>
-function parseItems(text) {
-return text.split('\n').map(line => {
-const p = line.split('|');
-if (p.length < 2) return null;
-return { name: p[0].trim(), url: p[1].trim() };
-}).filter(Boolean);
-}
+    function parseItems(text) {
+        return text.split('\n').map(line => {
+            const p = line.split('|');
+            if (p.length < 2) return null;
+            return { name: p[0].trim(), url: p[1].trim() };
+        }).filter(Boolean);
+    }
 
-function parseTasks(text) {
-    return text.split('\n').map(line => {
-        const p = line.split('|');
-        if (p.length < 2) return null;
-        return { q: p[0].trim(), ans: p[1].trim().toLowerCase() };
-    }).filter(Boolean);
-}
-function generateGameHtml() {
-    const title = document.getElementById('game-title').value;
-    const dollUrl = document.getElementById('doll-url').value;
-    const dollScale = document.getElementById('doll-scale').value;
-    const itemScale = document.getElementById('item-scale').value;
-    document.getElementById('doll-scale-val').innerText = dollScale + '%';
-    document.getElementById('item-scale-val').innerText = itemScale + '%';
-    const cat1Items = parseItems(document.getElementById('cat1-items').value);
-    const cat2Items = parseItems(document.getElementById('cat2-items').value);
-    const tasks = parseTasks(document.getElementById('eng-tasks').value);
-    const dataObj = {
-        dollScale,
-        itemScale,
-        categories: [
-            { name: "Одежда", items: cat1Items },
-            { name: "Обувь", items: cat2Items }
-        ],
-        tasks: tasks
-    };
-    return `<!DOCTYPE html>
+    function parseTasks(text) {
+        return text.split('\n').map(line => {
+            const p = line.split('|');
+            if (p.length < 2) return null;
+            return { q: p[0].trim(), ans: p[1].trim().toLowerCase() };
+        }).filter(Boolean);
+    }
+
+    function generateGameHtml() {
+        const title = document.getElementById('game-title').value;
+        const dollUrl = document.getElementById('doll-url').value;
+        const dollScale = document.getElementById('doll-scale').value;
+        const itemScale = document.getElementById('item-scale').value;
+        
+        document.getElementById('doll-scale-val').innerText = dollScale + '%';
+        document.getElementById('item-scale-val').innerText = itemScale + '%';
+
+        const cat1Items = parseItems(document.getElementById('cat1-items').value);
+        const cat2Items = parseItems(document.getElementById('cat2-items').value);
+        const tasks = parseTasks(document.getElementById('eng-tasks').value);
+
+        const dataObj = {
+            dollScale,
+            itemScale,
+            categories: [
+                { name: "Одежда", items: cat1Items },
+                { name: "Обувь", items: cat2Items }
+            ],
+            tasks: tasks
+        };
+
+        return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <style>
-body { margin: 0; font-family: sans-serif; background: transparent; color: #f6f7ff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-header { padding: 10px 15px; background: rgba(19, 24, 40, 0.9); font-weight: bold; color: #ff79c6; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); border-top-left-radius: 12px; border-top-right-radius: 12px; }
-.container { display: grid; grid-template-columns: 1fr 300px; flex: 1; overflow: hidden; background: rgba(11, 15, 25, 0.85); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
-.stage { position: relative; display: flex; align-items: center; justify-content: center; background: transparent; }
-.doll { max-height: ${dollScale}%; max-width: ${dollScale}%; object-fit: contain; position: absolute; pointer-events: none; }
-.item-img { max-height: ${itemScale}%; max-width: ${itemScale}%; object-fit: contain; position: absolute; pointer-events: none; }
-.sidebar { background: rgba(19, 24, 40, 0.9); display: flex; flex-direction: column; padding: 10px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.1); }
-.tabs { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
-.tab { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-.tab.active { background: #ff79c6; color: #111; border-color: #ff79c6; font-weight: bold; }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; }
-.card:hover { border-color: #ff79c6; background: rgba(255,255,255,0.1); }
-.card img { width: 100%; height: 75px; object-fit: contain; }
-.card div { font-size: 11px; margin-top: 4px; }
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; }
-.modal-box { background: #131828; border: 2px solid #ff79c6; padding: 20px; border-radius: 12px; width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-.modal-box input { width: 90%; padding: 8px; background: #090c1a; border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; margin: 10px 0; text-align: center; }
-.modal-box button { background: #ff79c6; color: #111; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+    body { margin: 0; font-family: sans-serif; background: transparent; color: #f6f7ff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    header { padding: 10px 15px; background: rgba(19, 24, 40, 0.9); font-weight: bold; color: #ff79c6; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); border-top-left-radius: 12px; border-top-right-radius: 12px; }
+    .container { display: grid; grid-template-columns: 1fr 300px; flex: 1; overflow: hidden; background: rgba(11, 15, 25, 0.85); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+    .stage { position: relative; display: flex; align-items: center; justify-content: center; background: transparent; }
+    .doll { max-height: ${dollScale}%; max-width: ${dollScale}%; object-fit: contain; position: absolute; pointer-events: none; }
+    .item-img { max-height: ${itemScale}%; max-width: ${itemScale}%; object-fit: contain; position: absolute; pointer-events: none; }
+    .sidebar { background: rgba(19, 24, 40, 0.9); display: flex; flex-direction: column; padding: 10px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.1); }
+    .tabs { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+    .tab { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .tab.active { background: #ff79c6; color: #111; border-color: #ff79c6; font-weight: bold; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; }
+    .card:hover { border-color: #ff79c6; background: rgba(255,255,255,0.1); }
+    .card img { width: 100%; height: 75px; object-fit: contain; }
+    .card div { font-size: 11px; margin-top: 4px; }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; }
+    .modal-box { background: #131828; border: 2px solid #ff79c6; padding: 20px; border-radius: 12px; width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .modal-box input { width: 90%; padding: 8px; background: #090c1a; border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; margin: 10px 0; text-align: center; }
+    .modal-box button { background: #ff79c6; color: #111; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; cursor: pointer; }
 </style>
 </head>
 <body>
 <header>${title}</header>
 <div class="container">
-<div class="stage" id="stage">
-<img class="doll" src="${dollUrl}">
-</div>
-<div class="sidebar">
-<div class="tabs" id="tabs"></div>
-<div class="grid" id="grid"></div>
-</div>
+    <div class="stage" id="stage">
+        <img class="doll" src="${dollUrl}">
+    </div>
+    <div class="sidebar">
+        <div class="tabs" id="tabs"></div>
+        <div class="grid" id="grid"></div>
+    </div>
 </div>
 <div class="modal" id="modal">
-<div class="modal-box">
-<h3 style="margin-top:0; color:#ff79c6;">🇬🇧 Вопрос</h3>
-<p id="q-text"></p>
-<input type="text" id="ans-input" placeholder="Ответ..." onkeydown="if(event.key==='Enter')checkAns()">
-<br><button onclick="checkAns()">Проверить</button>
-</div>
+    <div class="modal-box">
+        <h3 style="margin-top:0; color:#ff79c6;">🇬🇧 Вопрос</h3>
+        <p id="q-text"></p>
+        <input type="text" id="ans-input" placeholder="Ответ..." onkeydown="if(event.key==='Enter')checkAns()">
+        <br><button onclick="checkAns()">Проверить</button>
+    </div>
 </div>
 <script>
-const data = ${JSON.stringify(dataObj)};
-let activeCat = 0, targetItem = null, currentTask = null;
+    const data = ${JSON.stringify(dataObj)};
+    let activeCat = 0, targetItem = null, currentTask = null;
 
-function init() {
-    const tabs = document.getElementById("tabs");
-    if (!data.categories) return;
-    data.categories.forEach((cat, idx) => {
-        const btn = document.createElement("button");
-        btn.className = "tab " + (idx === 0 ? "active" : "");
-        btn.innerText = cat.name;
-        btn.onclick = () => {
-            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-            btn.classList.add("active");
-            activeCat = idx;
-            renderGrid();
-        };
-        tabs.appendChild(btn);
-    });
-    renderGrid();
-}
-function renderGrid() {
-    const grid = document.getElementById("grid");
-    grid.innerHTML = "";
-    const cat = data.categories[activeCat];
-    if(!cat || !cat.items) return;
-    cat.items.forEach(item => {
-        const c = document.createElement("div");
-        c.className = "card";
-        c.innerHTML = '<img src="' + item.url + '"><div>' + item.name + '</div>';
-        c.onclick = () => tryEquip(item);
-        grid.appendChild(c);
-    });
-}
-function tryEquip(item) {
-    if(data.tasks && data.tasks.length > 0) {
-        targetItem = item;
-        currentTask = data.tasks[Math.floor(Math.random() * data.tasks.length)];
-        document.getElementById("q-text").innerText = currentTask.q;
-        const input = document.getElementById("ans-input");
-        input.value = "";
-        document.getElementById("modal").style.display = "flex";
-        setTimeout(() => input.focus(), 50);
-    } else {
-        equip(item);
+    function init() {
+        const tabs = document.getElementById("tabs");
+        if (!data.categories) return;
+        data.categories.forEach((cat, idx) => {
+            const btn = document.createElement("button");
+            btn.className = "tab " + (idx === 0 ? "active" : "");
+            btn.innerText = cat.name;
+            btn.onclick = () => {
+                document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+                btn.classList.add("active");
+                activeCat = idx;
+                renderGrid();
+            };
+            tabs.appendChild(btn);
+        });
+        renderGrid();
     }
-}
-function checkAns() {
-    const val = document.getElementById("ans-input").value.trim().toLowerCase();
-    if(val === currentTask.ans) {
-        document.getElementById("modal").style.display = "none";
-        equip(targetItem);
-    } else {
-        alert("Неверно, попробуйте еще раз!");
+
+    function renderGrid() {
+        const grid = document.getElementById("grid");
+        grid.innerHTML = "";
+        const cat = data.categories[activeCat];
+        if(!cat || !cat.items) return;
+        cat.items.forEach(item => {
+            const c = document.createElement("div");
+            c.className = "card";
+            c.innerHTML = '<img src="' + item.url + '"><div>' + item.name + '</div>';
+            c.onclick = () => tryEquip(item);
+            grid.appendChild(c);
+        });
     }
-}
-function equip(item) {
-    let ex = document.getElementById("eq-" + activeCat);
-    if(ex) ex.remove();
-    const img = document.createElement("img");
-    img.id = "eq-" + activeCat;
-    img.className = "item-img";
-    img.src = item.url;
-    document.getElementById("stage").appendChild(img);
-}
-init();
-</script>
+
+    function tryEquip(item) {
+        if(data.tasks && data.tasks.length > 0) {
+            targetItem = item;
+            currentTask = data.tasks[Math.floor(Math.random() * data.tasks.length)];
+            document.getElementById("q-text").innerText = currentTask.q;
+            const input = document.getElementById("ans-input");
+            input.value = "";
+            document.getElementById("modal").style.display = "flex";
+            setTimeout(() => input.focus(), 50);
+        } else {
+            equip(item);
+        }
+    }
+
+    function checkAns() {
+        const val = document.getElementById("ans-input").value.trim().toLowerCase();
+        if(val === currentTask.ans) {
+            document.getElementById("modal").style.display = "none";
+            equip(targetItem);
+        } else {
+            alert("Неверно, попробуйте еще раз!");
+        }
+    }
+
+    function equip(item) {
+        let ex = document.getElementById("eq-" + activeCat);
+        if(ex) ex.remove();
+        const img = document.createElement("img");
+        img.id = "eq-" + activeCat;
+        img.className = "item-img";
+        img.src = item.url;
+        document.getElementById("stage").appendChild(img);
+    }
+
+    init();
+<\/script>
 </body>
 </html>`;
-}
+    }
 
-function updatePreview() {
-    const html = generateGameHtml();
-    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    document.getElementById('preview-frame').src = URL.createObjectURL(blob);
-}
-function copyCode() {
-    const html = generateGameHtml();
-    const encoded = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-    const iframeCode = `<iframe src="${encoded}" width="750" height="550" style="border:none; border-radius:12px; background:transparent;"></iframe>`;
-    navigator.clipboard.writeText(iframeCode);
-    alert("Готовый iframe код для Genially скопирован в буфер обмена!");
-}
-updatePreview();
+    function updatePreview() {
+        const html = generateGameHtml();
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        document.getElementById('preview-frame').src = URL.createObjectURL(blob);
+    }
+
+    function copyCode() {
+        const html = generateGameHtml();
+        const encoded = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+        const iframeCode = `<iframe src="${encoded}" width="750" height="550" style="border:none; border-radius:12px; background:transparent;"></iframe>`;
+        
+        navigator.clipboard.writeText(iframeCode);
+        alert("Готовый iframe код для Genially скопирован в буфер обмена!");
+    }
+
+    updatePreview();
 </script>
 </body>
 </html>
