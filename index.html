@@ -1,119 +1,302 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-<meta charset="utf-8">
-<style>
-    body { margin: 0; font-family: sans-serif; background: #0b0f19; color: #f6f7ff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    header { padding: 10px 15px; background: #131828; font-weight: bold; color: #ff79c6; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .container { display: grid; grid-template-columns: 1fr 300px; flex: 1; overflow: hidden; }
-    .stage { position: relative; display: flex; align-items: center; justify-content: center; background: #0b0f19; }
-    .doll { max-height: 90%; max-width: 90%; object-fit: contain; position: absolute; pointer-events: none; }
-    .item-img { max-height: 131%; max-width: 131%; object-fit: contain; position: absolute; pointer-events: none; }
-    .sidebar { background: #131828; display: flex; flex-direction: column; padding: 10px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.1); }
-    .tabs { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
-    .tab { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-    .tab.active { background: #ff79c6; color: #111; border-color: #ff79c6; font-weight: bold; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; }
-    .card:hover { border-color: #ff79c6; background: rgba(255,255,255,0.1); }
-    .card img { width: 100%; height: 75px; object-fit: contain; }
-    .card div { font-size: 11px; margin-top: 4px; }
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; }
-    .modal-box { background: #131828; border: 2px solid #ff79c6; padding: 20px; border-radius: 12px; width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-    .modal-box input { width: 90%; padding: 8px; background: #090c1a; border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; margin: 10px 0; text-align: center; }
-    .modal-box button { background: #ff79c6; color: #111; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; cursor: pointer; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактор игры: Одень куклу</title>
+    <style>
+        :root {
+            --primary: #ff6584;
+            --secondary: #6c63ff;
+            --bg-color: #f7f9fc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .creator-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+            justify-content: center;
+        }
+
+        /* Область куклы */
+        .stage {
+            position: relative;
+            width: 300px;
+            height: 450px;
+            background: #fff0f3;
+            border: 3px dashed #ffb3c1;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .doll-base {
+            position: absolute;
+            width: 180px;
+            height: 400px;
+            background: #e2e8f0;
+            border-radius: 90px 90px 40px 40px;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: #94a3b8;
+            font-weight: bold;
+            padding-top: 20px;
+        }
+
+        /* Одежда на сцене */
+        .item-on-stage {
+            position: absolute;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            max-width: 150px;
+            max-height: 200px;
+            z-index: 2;
+        }
+
+        .item-on-stage:active {
+            cursor: grabbing;
+        }
+
+        /* Панель гардероба */
+        .wardrobe {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 320px;
+        }
+
+        .wardrobe-section {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .wardrobe-section h3 {
+            margin: 0 0 8px 0;
+            font-size: 0.95rem;
+            color: #475569;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .item-thumb {
+            width: 100%;
+            height: 60px;
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            object-fit: contain;
+            padding: 4px;
+            box-sizing: border-box;
+        }
+
+        .item-thumb:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* Панель генерации Iframe */
+        .export-panel {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .export-panel textarea {
+            width: 100%;
+            height: 60px;
+            resize: none;
+            padding: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background: #f1f5f9;
+        }
+
+        .btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #5849e2;
+        }
+    </style>
 </head>
 <body>
-<header>Одень принцессу</header>
-<div class="container">
-    <div class="stage" id="stage">
-        <img class="doll" src="https://img.genially.com/6370eab9b3a7e3001249010b/63209193-3f97-4420-b770-b11840be1ab1.png">
-    </div>
-    <div class="sidebar">
-        <div class="tabs" id="tabs"></div>
-        <div class="grid" id="grid"></div>
-    </div>
-</div>
-<div class="modal" id="modal">
-    <div class="modal-box">
-        <h3 style="margin-top:0; color:#ff79c6;">🇬🇧 Вопрос</h3>
-        <p id="q-text"></p>
-        <input type="text" id="ans-input" placeholder="Ответ..." onkeydown="if(event.key==='Enter')checkAns()">
-        <br><button onclick="checkAns()">Проверить</button>
-    </div>
-</div>
-<script>
-    const data = {"dollScale":"90","itemScale":"131","categories":[{"name":"Одежда","items":[{"name":"dress","url":"https://img.genially.com/6370eab9b3a7e3001249010b/93e7bfb2-eaef-4101-9397-54c4f1127027.png"},{"name":"jacket","url":"https://img.genially.com/6370eab9b3a7e3001249010b/93e7bfb2-eaef-4101-9397-54c4f1127027.png"}]},{"name":"Обувь","items":[{"name":"shoes","url":"https://img.genially.com/6370eab9b3a7e3001249010b/93e7bfb2-eaef-4101-9397-54c4f1127027.png"}]}],"tasks":[{"q":"What is your name","ans":"dress"},{"q":"How old are you","ans":"shoes"}]};
-    let activeCat = 0, targetItem = null, currentTask = null;
 
-    function init() {
-        const tabs = document.getElementById("tabs");
-        if (!data.categories) return;
-        data.categories.forEach((cat, idx) => {
-            const btn = document.createElement("button");
-            btn.className = "tab " + (idx === 0 ? "active" : "");
-            btn.innerText = cat.name;
-            btn.onclick = () => {
-                document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-                btn.classList.add("active");
-                activeCat = idx;
-                renderGrid();
-            };
-            tabs.appendChild(btn);
-        });
-        renderGrid();
-    }
+    <h1>Конструктор игры «Одень куклу»</h1>
+    
+    <div class="creator-container">
+        <!-- Игровая сцена -->
+        <div class="stage" id="stage">
+            <div class="doll-base">Кукла</div>
+        </div>
 
-    function renderGrid() {
-        const grid = document.getElementById("grid");
-        grid.innerHTML = "";
-        const cat = data.categories[activeCat];
-        if(!cat || !cat.items) return;
-        cat.items.forEach(item => {
-            const c = document.createElement("div");
-            c.className = "card";
-            c.innerHTML = '<img src="' + item.url + '"><div>' + item.name + '</div>';
-            c.onclick = () => tryEquip(item);
-            grid.appendChild(c);
-        });
-    }
+        <!-- Гардероб -->
+        <div class="wardrobe">
+            <div class="wardrobe-section">
+                <h3>Головные уборы</h3>
+                <div class="items-grid">
+                    <img src="https://via.placeholder.com/80/ff70a6/ffffff?text=Шляпа" class="item-thumb" data-category="head" data-z="10" onclick="wearItem(this)">
+                    <img src="https://via.placeholder.com/80/ff9770/ffffff?text=Берет" class="item-thumb" data-category="head" data-z="10" onclick="wearItem(this)">
+                </div>
+            </div>
 
-    function tryEquip(item) {
-        if(data.tasks && data.tasks.length > 0) {
-            targetItem = item;
-            currentTask = data.tasks[Math.floor(Math.random() * data.tasks.length)];
-            document.getElementById("q-text").innerText = currentTask.q;
-            const input = document.getElementById("ans-input");
-            input.value = "";
-            document.getElementById("modal").style.display = "flex";
-            setTimeout(() => input.focus(), 50);
-        } else {
-            equip(item);
+            <div class="wardrobe-section">
+                <h3>Одежда</h3>
+                <div class="items-grid">
+                    <img src="https://via.placeholder.com/80/70d6ff/ffffff?text=Платье" class="item-thumb" data-category="body" data-z="5" onclick="wearItem(this)">
+                    <img src="https://via.placeholder.com/80/ffd670/ffffff?text=Кофта" class="item-thumb" data-category="body" data-z="5" onclick="wearItem(this)">
+                    <img src="https://via.placeholder.com/80/e7c6ff/ffffff?text=Юбка" class="item-thumb" data-category="body" data-z="4" onclick="wearItem(this)">
+                </div>
+            </div>
+
+            <div class="wardrobe-section">
+                <h3>Обувь</h3>
+                <div class="items-grid">
+                    <img src="https://via.placeholder.com/80/ff7070/ffffff?text=Туфли" class="item-thumb" data-category="shoes" data-z="3" onclick="wearItem(this)">
+                    <img src="https://via.placeholder.com/80/70ff70/ffffff?text=Кроссы" class="item-thumb" data-category="shoes" data-z="3" onclick="wearItem(this)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок интеграции в Genially -->
+    <div class="export-panel">
+        <h3>Код для вставки в Genially (Iframe)</h3>
+        <p style="font-size: 0.85rem; color: #666; margin: 4px 0 8px 0;">Опубликуйте эту страницу в сети, скопируйте вашу ссылку и вставьте её в поле ниже для генерации кода:</p>
+        <input type="text" id="hostingUrl" placeholder="Введите URL опубликованной страницы (например: https://mysite.com/game.html)" oninput="updateIframeCode()" style="width:100%; padding: 6px; margin-bottom: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;">
+        <textarea id="iframeOutput" readonly>&lt;iframe src="ВАШ_URL" width="100%" height="500px" style="border:none;"&gt;&lt;/iframe&gt;</textarea>
+        <button class="btn" onclick="copyCode()">Скопировать код</button>
+    </div>
+
+    <script>
+        const stage = document.getElementById('stage');
+
+        // Функция надевания предмета
+        function wearItem(imgElement) {
+            const category = imgElement.dataset.category;
+            const zIndex = imgElement.dataset.z;
+            const src = imgElement.src;
+
+            // Удаляем старый предмет этой же категории, если он уже надет
+            const existingItem = stage.querySelector(`.item-on-stage[data-category="${category}"]`);
+            if (existingItem) {
+                existingItem.remove();
+            }
+
+            // Создаем элемент на сцене
+            const newItem = document.createElement('img');
+            newItem.src = src;
+            newItem.className = 'item-on-stage';
+            newItem.dataset.category = category;
+            newItem.style.zIndex = zIndex;
+            
+            // Начальные координаты по центру сцены
+            newItem.style.left = '75px';
+            newItem.style.top = '120px';
+
+            makeDraggable(newItem);
+            stage.appendChild(newItem);
         }
-    }
 
-    function checkAns() {
-        const val = document.getElementById("ans-input").value.trim().toLowerCase();
-        if(val === currentTask.ans) {
-            document.getElementById("modal").style.display = "none";
-            equip(targetItem);
-        } else {
-            alert("Неверно, попробуйте еще раз!");
+        // Простая реализация перетаскивания (Drag and Drop для мыши и тач-устройств)
+        function makeDraggable(element) {
+            let isDragging = false;
+            let startX, startY;
+
+            element.addEventListener('pointerdown', (e) => {
+                isDragging = true;
+                startX = e.clientX - element.offsetLeft;
+                startY = e.clientY - element.offsetTop;
+                element.setPointerCapture(e.pointerId);
+                e.preventDefault();
+            });
+
+            element.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                let x = e.clientX - startX;
+                let y = e.clientY - startY;
+                
+                element.style.left = `${x}px`;
+                element.style.top = `${y}px`;
+            });
+
+            element.addEventListener('pointerup', (e) => {
+                isDragging = false;
+                element.releasePointerCapture(e.pointerId);
+            });
         }
-    }
 
-    function equip(item) {
-        let ex = document.getElementById("eq-" + activeCat);
-        if(ex) ex.remove();
-        const img = document.createElement("img");
-        img.id = "eq-" + activeCat;
-        img.className = "item-img";
-        img.src = item.url;
-        document.getElementById("stage").appendChild(img);
-    }
+        // Обновление iframe кода
+        function updateIframeCode() {
+            let url = document.getElementById('hostingUrl').value.trim();
+            if (!url) url = "ВАШ_URL";
+            const code = `<iframe src="${url}" width="100%" height="500px" style="border:none;"></iframe>`;
+            document.getElementById('iframeOutput').value = code;
+        }
 
-    init();
-</script>
+        // Копирование в буфер обмена
+        function copyCode() {
+            const textarea = document.getElementById('iframeOutput');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Код скопирован в буфер обмена!');
+        }
+    </script>
 </body>
 </html>
